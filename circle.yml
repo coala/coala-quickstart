@@ -1,0 +1,5 @@
+test:
+  override:
+    - sudo pip3 install -r requirements.txt -U
+    - sudo pip3 install pytest -U
+    - py.test --doctest-modules
