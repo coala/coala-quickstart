@@ -1,35 +1,35 @@
-#!/usr/bin/env python3
+import os
+from pyprint.ConsolePrinter import ConsolePrinter
 
-from os.path import abspath, join
-
-
-def get_project_dir():
-    """
-    Retrieves the project directory from the user:
-
-    >>> from coalib.misc.ContextManagers import simulate_console_inputs
-    >>> from coalib.misc.ContextManagers import suppress_stdout
-    >>> with simulate_console_inputs("/abs/path"), suppress_stdout():
-    ...     dir = get_project_dir()
-    >>> assert dir == "/abs/path"
-
-    If he doesn't feel like giving a directory, we'll assume the current
-    directory:
-
-    >>> with simulate_console_inputs(""), suppress_stdout():
-    ...     dir = get_project_dir()
-    >>> assert dir == abspath(".")
-    """
-    dir = input(
-        "Hey fellow! Awesome you decided to do high quality coding. "
-        "We hope we can help you with that. Let's get started, what is your "
-        "project directory? We'll create a `.coafile` in there with some "
-        "settings. Is the current directory fine? (press enter to confirm or "
-        "enter the project directory) ")
-    return abspath(dir)
+from coalib.output.printers.LogPrinter import LogPrinter
+from coala_utils.Question import ask_question
+from coala_quickstart.interaction.Logo import print_welcome_message
+from coala_quickstart.generation.Project import (
+    valid_path, get_used_languages, print_used_languages)
+from coala_quickstart.generation.FileGlobs import get_project_files
+from coala_quickstart.generation.Bears import (
+    filter_relevant_bears, print_relevant_bears)
+from coala_quickstart.generation.Settings import (
+    generate_settings, write_coafile)
 
 
 def main():
-    dir = get_project_dir()
-    files_glob = input("Please enter the files glob: ")
-    coafile = open(join(dir, ".coafile"), "a+")
+    printer = ConsolePrinter()
+    log_printer = LogPrinter(printer)
+
+    print_welcome_message(printer)
+
+    project_dir = ask_question(
+        "What is your project directory?",
+        default=os.getcwd(),
+        typecast=valid_path)
+    project_files = get_project_files(log_printer, printer, project_dir)
+
+    used_languages = list(get_used_languages(project_files))
+    print_used_languages(printer, used_languages)
+
+    relevant_bears = filter_relevant_bears(used_languages)
+    print_relevant_bears(printer, relevant_bears)
+
+    settings = generate_settings(project_dir, project_files, relevant_bears)
+    write_coafile(printer, project_dir, settings)
