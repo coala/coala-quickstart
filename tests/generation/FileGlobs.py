@@ -7,6 +7,7 @@ from coalib.misc.ContextManagers import (
     simulate_console_inputs, suppress_stdout, retrieve_stdout)
 from coala_quickstart.generation.FileGlobs import (
     get_project_files, generate_glob_exps)
+from coala_quickstart.generation.Utilities import get_gitignore_glob
 from coalib.collecting.Collectors import collect_files
 
 
@@ -36,6 +37,69 @@ class TestQuestion(unittest.TestCase):
             self.assertNotIn(os.path.join(os.getcwd(), "ignore_dir/src.c"), res)
             self.assertNotIn(os.path.join(os.getcwd(), "ignore_dir/src.js"), res)
 
+        os.chdir(orig_cwd)
+
+    def test_get_project_files_gitignore(self):
+        orig_cwd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        os.makedirs("file_globs_gitignore_testfiles", exist_ok=True)
+        os.chdir("file_globs_gitignore_testfiles")
+
+        with open(".gitignore", "w") as f:
+            f.write("""
+# Start of gitignore
+build
+ignore.c
+/tests
+/upload.c
+/*.py
+*.pyc
+__pycache__
+# End of gitignore""")
+
+        files = [os.path.join("src", "main.c"),
+            os.path.join("src", "main.h"),
+            os.path.join("src", "lib", "ssl.c"),
+            os.path.join("src", "tests", "main.c"),
+            os.path.join("src", "main.py"),
+            os.path.join("src", "upload.c"),
+            ".coafile"]
+        ignored_files = [os.path.join("build", "main.c"),
+            os.path.join("tests", "run.c"),
+            os.path.join("src", "build", "main.c"),
+            "ignore.c",
+            os.path.join("src", "ignore.c"),
+            "globexp.py",
+            "upload.c",
+            os.path.join("src", "main.pyc"),
+            "run.pyc"]
+
+        for file in files + ignored_files:
+            os.makedirs(os.path.dirname(os.path.abspath(file)), exist_ok=True)
+            open(file, "w").close()
+        files += [".gitignore"]
+
+        globs = get_gitignore_glob(os.getcwd())
+        returned_files = collect_files(
+            os.path.join(os.getcwd(), "**"),
+            self.log_printer,
+            ignored_file_paths=globs)
+        files = [os.path.abspath(file) for file in files]
+        ignored_files = [os.path.abspath(file) for file in ignored_files]
+        self.maxDiff = None
+        self.assertEqual(sorted(files), sorted(returned_files))
+
+        with suppress_stdout(), simulate_console_inputs("**", "yes"):
+            self.assertEqual(
+                sorted(get_project_files(self.log_printer, self.printer, os.getcwd())),
+                sorted(files))
+
+        with suppress_stdout(), simulate_console_inputs("**", "no", ""):
+            out = get_project_files(self.log_printer, self.printer, os.getcwd())
+            for file in ignored_files + files:
+                self.assertIn(file, out)
+
+        os.remove(".gitignore")
         os.chdir(orig_cwd)
 
     def test_generate_glob_exps(self):
