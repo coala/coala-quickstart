@@ -25,3 +25,17 @@ WELCOME_MESSAGES = ["Hi there! Awesome you decided to do some high "
 
                     "We can help you with that. Let's get started with "
                     "some basic questions."]
+
+
+GLOB_HELP_URL = "http://coala.readthedocs.io/en/latest/Users/Glob_Patterns.html"
+GLOB_HELP = """
+File globs are a very concise way to specify a large
+number of files. You may give multiple file globs
+separated by commas. To learn more about glob patterns
+please visit: {}
+
+For example, you may want to include your src/ folder and
+all its contents but exclude your .git directory and all
+.o files. To do this, simply give `src/` for the first
+question and `.git/**,**/*.o` for the second question.
+""".format(GLOB_HELP_URL)
