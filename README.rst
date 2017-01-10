@@ -5,9 +5,12 @@ coala-quickstart: personalized coala setup for your project
 coala-quickstart is a tool that helps users to quickly get started
 with coala. It can generate a ``.coafile`` (
 `coala <https://github.com/coala/coala>`__'s configuration
-file) that is tailored perfectly for your project without any
-interaction. This supports projects in several languages, including
-popular languages such as C/C++, Python, JavaScript, CSS, Java.
+file) that is tailored to your project. This supports projects in
+several languages, including popular languages such as C/C++, Python,
+JavaScript, CSS, Java.
+
+Please note that you will want do manually adapt the configuration to
+your needs!
 
 -----
 

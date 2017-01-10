@@ -50,17 +50,20 @@ def main():
     log_printer = LogPrinter(printer)
 
     project_dir = os.getcwd()
+    is_CI_mode = True
     if not args.non_interactive:
         print_welcome_message(printer)
         project_dir = ask_question(
             "What is your project directory?",
             default=project_dir,
             typecast=valid_path)
+        is_CI_mode = False
 
     project_files, ignore_globs = get_project_files(
         log_printer,
         printer,
-        project_dir)
+        project_dir,
+        is_CI_mode)
 
     used_languages = list(get_used_languages(project_files))
     print_used_languages(printer, used_languages)
@@ -79,3 +82,4 @@ def main():
         ignore_globs,
         relevant_bears)
     write_coafile(printer, project_dir, settings)
+
