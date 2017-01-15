@@ -50,17 +50,20 @@ def main():
     log_printer = LogPrinter(printer)
 
     project_dir = os.getcwd()
+    noninteractive = True
     if not args.non_interactive:
         print_welcome_message(printer)
         project_dir = ask_question(
             "What is your project directory?",
             default=project_dir,
             typecast=valid_path)
+        noninteractive = False
 
     project_files, ignore_globs = get_project_files(
         log_printer,
         printer,
-        project_dir)
+        project_dir,
+        noninteractive)
 
     used_languages = list(get_used_languages(project_files))
     print_used_languages(printer, used_languages)
