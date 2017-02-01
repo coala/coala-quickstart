@@ -60,7 +60,8 @@ def main():
     project_files, ignore_globs = get_project_files(
         log_printer,
         printer,
-        project_dir)
+        project_dir,
+        args.non_interactive)
 
     used_languages = list(get_used_languages(project_files))
     print_used_languages(printer, used_languages)

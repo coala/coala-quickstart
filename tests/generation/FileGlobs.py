@@ -30,7 +30,8 @@ class TestQuestion(unittest.TestCase):
         open(os.path.join("ignore_dir", "src.js"), "w").close()
 
         with suppress_stdout(), simulate_console_inputs("ignore_dir/**"):
-            res, _ = get_project_files(self.log_printer, self.printer, os.getcwd())
+            res, _ = get_project_files(
+                self.log_printer, self.printer, os.getcwd(), False)
             self.assertIn(os.path.join(os.getcwd(), "src", "file.c"), res)
             self.assertIn(os.path.join(os.getcwd(), "root.c"), res)
             self.assertNotIn(os.path.join(os.getcwd(), "ignore_dir/src.c"), res)
@@ -91,8 +92,8 @@ __pycache__
         with suppress_stdout():
             self.assertEqual(
                 sorted(get_project_files(
-                    self.log_printer, self.printer, os.getcwd())[0]),
-                sorted(files))
+                    self.log_printer, self.printer, os.getcwd(),
+                self.non_interactive)[0]), sorted(files))
 
         os.remove(".gitignore")
         os.chdir(orig_cwd)
