@@ -1,2 +1,3 @@
 coala_bears~=0.9
 coala_utils~=0.4
+pyjsparser~=2.4.5

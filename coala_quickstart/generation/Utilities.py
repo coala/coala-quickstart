@@ -111,3 +111,95 @@ def get_extensions(project_files):
                 extset[lang.lower()].add(ext)
 
     return extset
+
+
+def search_dict_recursively(search_dict, key, value=None, prepath=(), idx=-1):
+    """
+    Takes a dict with nested lists and dicts,
+    and searches for the key and values provided.
+
+    :param search_dict:
+        dict to be searched
+    :param key:
+        key to look for, can be a dictionary too
+    :param value:
+        optional, if provided match the value of `key` parameter
+        with this `value` parameter and the result consists of
+        all the objects having this key-value pair
+    :param prepath:
+        path traversed so far recursively
+    :param idx:
+        idx of current element traversed while traversing a list
+        of elements.
+    :return:
+        A list of dicts of the form
+        {
+            "object": list or dict that match the search criteria,
+            "path": tuple ofpath to the object from the root of the
+                    `search_dict`
+        }
+    """
+    results = []
+
+    if isinstance(search_dict, list):
+        idx = -1
+        for i in search_dict:
+            idx += 1
+            return search_dict_recursively(i, key, value, prepath, idx)
+    for k, v in search_dict.items():
+        path = prepath + (k,) if idx < 0 else prepath + (idx, k,)
+        if value and key:
+            if k == key and v == value:
+                results.append({
+                        "object": search_dict,
+                        "path": path
+                    })
+        elif key and not value:
+            if k == key:
+                results.append({
+                    "object": v,
+                    "path": path
+                    })
+        if isinstance(v, dict):
+            temp_results = search_dict_recursively(v, key, value, path)
+            for result in temp_results:
+                results.append(result)
+        elif isinstance(v, list):
+            idx = -1
+            for item in v:
+                idx += 1
+                if isinstance(item, dict):
+                    temp_results = search_dict_recursively(
+                        item, key, value, path, idx)
+                    for result in temp_results:
+                        results.append(result)
+
+    return results
+
+
+def get_parent_from_dict(d, path, p_key, p_index=None):
+    """
+    Takes a dict with nested lists and dicts, and returns
+    specific part depending upon the parameters provided.
+
+    :param d:
+        dict to be searched
+    :param path:
+        tuple of path relative to which parent is to be extracted
+    :param p_key:
+        the key of the part to be returned
+    :param p_index:
+        optional, If the part corresponds to a list, index of
+        the item to be returned
+    :return:
+        A dict or list which is a part of `d`
+    """
+    for idx, key in enumerate(path[::-1]):
+        if(key == p_key):
+            position = len(path)-idx
+            result = d
+            for i in range(position):
+                result = result[path[i]]
+            if p_index is not None:
+                result = result[p_index]
+            return result
