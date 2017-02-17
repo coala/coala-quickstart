@@ -13,7 +13,7 @@ from coala_quickstart.generation.Project import (
 from coala_quickstart.generation.FileGlobs import get_project_files
 from coala_quickstart.generation.Bears import (
     filter_relevant_bears,
-    print_relevant_bears,
+    print_relevant_bears_by_language,
     get_non_optional_settings_bears,
     remove_unusable_bears,
 )
@@ -66,12 +66,12 @@ def main():
     print_used_languages(printer, used_languages)
 
     relevant_bears = filter_relevant_bears(used_languages, arg_parser)
-    print_relevant_bears(printer, relevant_bears)
+    print_relevant_bears_by_language(printer, relevant_bears)
 
     if args.non_interactive:
         unusable_bears = get_non_optional_settings_bears(relevant_bears)
         remove_unusable_bears(relevant_bears, unusable_bears)
-        print_relevant_bears(printer, relevant_bears, 'usable')
+        print_relevant_bears_by_language(printer, relevant_bears, 'usable')
 
     settings = generate_settings(
         project_dir,
