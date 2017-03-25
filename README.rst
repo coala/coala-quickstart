@@ -9,7 +9,7 @@ file) that is tailored to your project. This supports projects in
 several languages, including popular languages such as C/C++, Python,
 JavaScript, CSS, Java.
 
-Please note that you will want do manually adapt the configuration to
+Please note that you will want to manually adapt the configuration to
 your needs!
 
 -----
