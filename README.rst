@@ -10,7 +10,7 @@ several languages, including popular languages such as C/C++, Python,
 JavaScript, CSS, Java.
 
 Please note that you will want to manually adapt the configuration to
-your needs!
+your needs! 
 
 -----
 
