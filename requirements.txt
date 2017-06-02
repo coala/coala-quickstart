@@ -1,2 +1,2 @@
-coala_bears~=0.9
+coala_bears~=0.11
 coala_utils~=0.4

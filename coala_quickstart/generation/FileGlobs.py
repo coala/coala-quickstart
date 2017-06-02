@@ -7,7 +7,7 @@ from coala_quickstart.Strings import GLOB_HELP
 from coalib.collecting.Collectors import collect_files
 
 
-def get_project_files(log_printer, printer, project_dir):
+def get_project_files(log_printer, printer, project_dir, non_interactive=False):
     """
     Gets the list of files matching files in the user's project directory
     after prompting for glob expressions.
@@ -16,6 +16,8 @@ def get_project_files(log_printer, printer, project_dir):
         A ``LogPrinter`` object.
     :param printer:
         A ``ConsolePrinter`` object.
+    :param non_interactive
+        Whether coala-quickstart is in non-interactive mode
     :return:
         A list of file paths matching the files.
     """
@@ -27,6 +29,9 @@ def get_project_files(log_printer, printer, project_dir):
                       "will be automatically loaded as the files to ignore.",
                       color="green")
         ignore_globs = get_gitignore_glob(project_dir)
+
+    if non_interactive and not ignore_globs:
+        ignore_globs = []
 
     if ignore_globs is None:
         printer.print(GLOB_HELP)
