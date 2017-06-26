@@ -97,7 +97,7 @@ def remove_unusable_bears(bears, unusable_bears):
                 bears[language].remove(bear)
 
 
-def print_relevant_bears(printer, relevant_bears, label='relevant'):
+def print_relevant_bears_by_language(printer, relevant_bears, label='relevant'):
     """
     Prints the relevant bears in sections separated by language.
 
@@ -115,4 +115,30 @@ def print_relevant_bears(printer, relevant_bears, label='relevant'):
         printer.print("    [" + language + "]", color="green")
         for bear in relevant_bears[language]:
             printer.print("    " + bear.name, color="cyan")
+        printer.print("")
+
+
+def print_relevant_bears_by_linter(printer,
+                                   source,
+                                   relevant_bears,
+                                   label="relevant"):
+    """
+    Prints the relevant bears in sections separated by corresponding
+    linter names.
+
+    :param printer:
+        A ``ConsolePrinter`` object used for console interactions.
+    :param source:
+        A string containing info about the source of information of
+        the relevance of bears.
+    :param relevant_bears:
+        A dict with linter name as key and bear names as value.
+    """
+
+    printer.print("\nBased on the %s used in project the following "
+                  "bears have been identified to be %s:" % (source, label))
+    for linter in relevant_bears:
+        printer.print("    [" + linter + "]", color="green")
+        for bear in relevant_bears[linter]:
+            printer.print("    " + bear, color="cyan")
         printer.print("")
