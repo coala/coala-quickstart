@@ -52,16 +52,11 @@ def generate_ignore_field(project_dir,
         A comma-separated string containing the globs to ignore.
     """
 
-    all_files = set(collect_files(
-        '**',
-        null_printer,
-        ignored_file_paths=ignore_globs))
+    
 
     ignores = []
     for glob in ignore_globs:
-        gitignore_files = {file
-                           for file in collect_files([glob], null_printer)}
-        ignores.append(os.path.relpath(glob, project_dir))
+         ignores.append(os.path.relpath(glob, project_dir))
 
     return ', '.join(ignores)
 
