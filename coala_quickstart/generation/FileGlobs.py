@@ -24,11 +24,16 @@ def get_project_files(log_printer, printer, project_dir, non_interactive=False):
     file_globs = ["**"]
 
     ignore_globs = None
-    if os.path.isfile(os.path.join(project_dir, ".gitignore")):
+    gitignore_dir_list = []
+    for dir_name, subdir_name, file_list in os.walk(project_dir):
+        if os.path.isfile(os.path.join(dir_name, ".gitignore")):
+            gitignore_dir_list += [dir_name]
+
+    if gitignore_dir_list:
         printer.print("The contents of your .gitignore file for the project "
                       "will be automatically loaded as the files to ignore.",
                       color="green")
-        ignore_globs = get_gitignore_glob(project_dir)
+        ignore_globs = get_gitignore_glob(project_dir, gitignore_dir_list)
 
     if non_interactive and not ignore_globs:
         ignore_globs = []

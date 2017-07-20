@@ -57,23 +57,26 @@ def parse_gitignore_line(line):
             yield line
 
 
-def get_gitignore_glob(project_dir, filename=".gitignore"):
+def get_gitignore_glob(project_dir, gitignore_dir_list, filename=".gitignore"):
     """
     Generates a list of glob expressions equivalent to the
     contents of the user's project's ``.gitignore`` file.
 
     :param project_dir:
         The user's project directory.
+    :param gitignore_dir_list:
+        List of paths to the directories of the project
+        in which a .gitignore file is present.
     :return:
         A list generator of glob expressions generated from the
         ``.gitignore`` file.
     """
-    gitignore = os.path.join(project_dir, filename)
-
-    with open(gitignore, "r") as file:
-        for line in file:
-            for glob in parse_gitignore_line(line):
-                yield os.path.join(project_dir, glob)
+    for dir_name in gitignore_dir_list:
+        gitignore = os.path.join(dir_name, filename)
+        with open(gitignore, "r") as file:
+            for line in file:
+                for glob in parse_gitignore_line(line):
+                    yield os.path.join(dir_name, glob)
 
 
 def split_by_language(project_files):
