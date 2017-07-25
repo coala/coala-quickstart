@@ -103,8 +103,8 @@ def generate_settings(project_dir, project_files, ignore_globs, relevant_bears,
 
     settings = OrderedDict()
 
-    settings["default"] = generate_section(
-        "default",
+    settings["all"] = generate_section(
+        "all",
         [ext for lang in lang_files for ext in extset[lang]],
         relevant_bears[lang_map["all"]])
 
@@ -112,12 +112,12 @@ def generate_settings(project_dir, project_files, ignore_globs, relevant_bears,
                                           extset, ignore_globs)
 
     if ignored_files:
-        settings["default"]["ignore"] = ignored_files
+        settings["all"]["ignore"] = ignored_files
 
     for lang in lang_files:
         if lang != "unknown" and lang != "all":
-            settings[lang_map[lang]] = generate_section(
-                lang,
+            settings['all.' + lang_map[lang]] = generate_section(
+                'all.' + lang,
                 extset[lang],
                 relevant_bears[lang_map[lang]])
 

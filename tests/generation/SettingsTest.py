@@ -54,9 +54,9 @@ class SettingsTest(unittest.TestCase):
         res = generate_settings(
             project_dir, project_files, ignore_globs, relevant_bears, {}, True)
 
-        bears_list = res["HTML"]["bears"].value.replace(" ", "").split(",")
+        bears_list = res["all.HTML"]["bears"].value.replace(" ", "").split(",")
 
-        files_list = res["HTML"]["files"].value.replace(" ", "").split(",")
+        files_list = res["all.HTML"]["files"].value.replace(" ", "").split(",")
 
         self.assertEqual(
             ['HTMLLintBear', 'coalaBear', 'BootLintBear',
