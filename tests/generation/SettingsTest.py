@@ -9,9 +9,12 @@ from pyprint.ConsolePrinter import ConsolePrinter
 
 from coalib.output.ConfWriter import ConfWriter
 from coala_quickstart.coala_quickstart import _get_arg_parser
-from coala_quickstart.generation.Settings import write_info, generate_settings
+from coala_quickstart.generation.Settings import (
+    write_info, generate_settings, generate_ignore_field)
 from coala_quickstart.generation.Bears import filter_relevant_bears
 from coala_quickstart.generation.Project import get_used_languages
+from coala_quickstart.generation.Utilities import (
+    split_by_language, get_extensions)
 
 
 class SettingsTest(unittest.TestCase):
@@ -44,8 +47,9 @@ class SettingsTest(unittest.TestCase):
 
     def test_allow_complete_section_mode(self):
         project_dir = "/repo"
-        project_files = ['/repo/hello.html']
-        ignore_globs = []
+        project_files = ['/repo/hello.html', '/repo/main.css',
+                         '/repo/style.css', '/repo/file.html']
+        ignore_globs = ['main.css', 'file.html']
 
         used_languages = list(get_used_languages(project_files))
         relevant_bears = filter_relevant_bears(
@@ -54,9 +58,9 @@ class SettingsTest(unittest.TestCase):
         res = generate_settings(
             project_dir, project_files, ignore_globs, relevant_bears, {}, True)
 
-        bears_list = res["HTML"]["bears"].value.replace(" ", "").split(",")
+        bears_list = res["all.HTML"]["bears"].value.replace(" ", "").split(",")
 
-        files_list = res["HTML"]["files"].value.replace(" ", "").split(",")
+        files_list = res["all.HTML"]["files"].value.replace(" ", "").split(",")
 
         self.assertEqual(
             ['HTMLLintBear', 'coalaBear', 'BootLintBear',
@@ -65,3 +69,18 @@ class SettingsTest(unittest.TestCase):
             bears_list.sort())
 
         self.assertEqual(['**.html'], files_list)
+
+    def test_generate_ignore_fields(self):
+        project_dir = "/repo"
+        project_files = ['/repo/hello.html', '/repo/main.css',
+                         '/repo/style.css', '/repo/file.html']
+        ignore_globs = ['main.css', 'file.html', '/repo/hello.html']
+
+        extset = get_extensions(project_files)
+
+        lang_files = split_by_language(project_files)
+
+        res = generate_ignore_field(
+            project_dir, lang_files.keys(), extset, ignore_globs)
+
+        self.assertIn('main.css', res)
