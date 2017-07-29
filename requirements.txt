@@ -2,3 +2,4 @@ coala_bears~=0.12.0.dev20170722110839
 coala_utils~=0.6.6
 gemfileparser~=0.6.2
 pyjsparser~=2.4.5
+requirements-parser~=0.1.0
