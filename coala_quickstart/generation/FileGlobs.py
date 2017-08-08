@@ -1,7 +1,8 @@
 import os
 
 from coalib.parsing.Globbing import glob_escape
-from coala_quickstart.generation.Utilities import get_gitignore_glob
+from coala_quickstart.generation.Utilities import (
+    get_gitignore_glob, get_npmignore_glob)
 from coala_utils.Question import ask_question
 from coala_quickstart.Strings import GLOB_HELP
 from coalib.collecting.Collectors import collect_files
@@ -23,17 +24,33 @@ def get_project_files(log_printer, printer, project_dir, non_interactive=False):
     """
     file_globs = ["**"]
 
-    ignore_globs = None
+    ignore_globs = []
     if os.path.isfile(os.path.join(project_dir, ".gitignore")):
         printer.print("The contents of your .gitignore file for the project "
                       "will be automatically loaded as the files to ignore.",
                       color="green")
-        ignore_globs = get_gitignore_glob(project_dir)
+        globs = get_gitignore_glob(project_dir)
+        for glob in globs:
+            ignore_globs += [glob]
+
+    npmignore_dir_list = []
+
+    for dir_name, subdir_name, files in os.walk(project_dir):
+        if(os.path.isfile(os.path.join(dir_name, ".npmignore"))):
+            npmignore_dir_list += [dir_name]
+
+    if(npmignore_dir_list):
+        printer.print("The contents of your .npmignore file for the project "
+                      "will be automatically loaded as files to ignore.",
+                      color="green")
+        globs = get_npmignore_glob(project_dir, npmignore_dir_list)
+        for glob in globs:
+            ignore_globs += [glob]
 
     if non_interactive and not ignore_globs:
         ignore_globs = []
 
-    if ignore_globs is None:
+    if not ignore_globs:
         printer.print(GLOB_HELP)
         ignore_globs = ask_question(
             "Which files do you want coala to ignore?",
