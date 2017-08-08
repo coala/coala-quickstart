@@ -1,0 +1,10 @@
+
+# Start of npmignore
+build
+ignore.c
+/tests
+/upload.c
+/*.py
+*.pyc
+__pycache__
+# End of npmignore

@@ -18,11 +18,12 @@ def is_glob_exp(line):
     return sum(1 for x in results) != 0
 
 
-def parse_gitignore_line(line):
+def parse_ignore_line(line):
     """
-    Parses the line from ``.gitignore`` and returns a list of globs.
+    Parses the line from ``.gitignore`` and ``.npmignore``
+    and returns a list of globs.
 
-    :param line: A line from the project's ``.gitignore`` file.
+    :param line: A line from the project's ``.gitignore`` or ``.npmignore`` file
     :return:     A list of glob expressions translated to the
                  syntax used in coala globbing.
     """
@@ -72,8 +73,29 @@ def get_gitignore_glob(project_dir, filename=".gitignore"):
 
     with open(gitignore, "r") as file:
         for line in file:
-            for glob in parse_gitignore_line(line):
+            for glob in parse_ignore_line(line):
                 yield os.path.join(project_dir, glob)
+
+
+def get_npmignore_glob(project_dir, npmignore_dir_list, filename=".npmignore"):
+    """
+    Generates a list of glob expressions equivalent to the
+    contents of the user's project's ``.npmignore`` file.
+
+    :param project_dir:
+        The user's project directory.
+    :param npmignore_dir_list:
+        A list of directories in project containing .npmignore
+    :return:
+        A list generator of glob expressions generated from the
+        ``.npmignore`` file.
+    """
+    for dir_name in npmignore_dir_list:
+        npmignore = os.path.join(dir_name, filename)
+        with open(npmignore, "r") as file:
+            for line in file:
+                for glob in parse_ignore_line(line):
+                    yield os.path.join(dir_name, glob)
 
 
 def split_by_language(project_files):
