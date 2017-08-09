@@ -2,19 +2,19 @@ from coala_quickstart.info_extraction.Info import Info
 
 
 class LicenseUsedInfo(Info):
-    description = "License of the project."
+    description = 'License of the project.'
     value_type = (str,)
-    example_values = ["MIT", "GPL-3", "Apache-2.0"]
+    example_values = ['MIT', 'GPL-3', 'Apache-2.0']
 
 
 class VersionInfo(Info):
-    description = "Version information, see http://semver.org/"
+    description = 'Version information, see http://semver.org/'
     value_type = (str,)
-    example_values = [">=1.2.7", "~1.2.3", "^0.2"]
+    example_values = ['>=1.2.7', '~1.2.3', '^0.2']
 
 
 class ProjectDependencyInfo(Info):
-    description = "Dependency of the project."
+    description = 'Dependency of the project.'
     value_type = (str,)
     example_values = ['some_npm_package_name', 'some_gem_name', 'other_dep']
 
@@ -28,13 +28,13 @@ class ProjectDependencyInfo(Info):
 
 
 class StyleInfo(Info):
-    description = "Information related to code styling."
+    description = 'Information related to code styling.'
 
     def __init__(self,
                  source,
                  value,
                  extractor=None,
-                 scope=["**"],
+                 scope=['**'],
                  **kwargs):
         """
         :param scope: list of files to which the styling information
@@ -44,29 +44,29 @@ class StyleInfo(Info):
 
 
 class PathsInfo(Info):
-    description = "File path globs mentioned in the file."
+    description = 'File path globs mentioned in the file.'
     value_type = ([str],)
-    example_values = ["**.py", "dev/tests/**"]
+    example_values = ['**.py', 'dev/tests/**']
 
 
 class IncludePathsInfo(PathsInfo):
-    description = "Target files to perform analysis."
+    description = 'Target files to perform analysis.'
 
 
 class IgnorePathsInfo(PathsInfo):
-    description = "Files to ignore during analysis."
+    description = 'Files to ignore during analysis.'
 
 
 class ManFilesInfo(Info):
-    description = "Filenames to put in place for the man program to find."
+    description = 'Filenames to put in place for the man program to find.'
     value_type = (str, [str])
-    example_values = ["./man/doc.1", ["./man/foo.1", "./man/bar.1"]]
+    example_values = ['./man/doc.1', ['./man/foo.1', './man/bar.1']]
 
     def __init__(self,
                  source,
                  value,
                  extractor=None,
-                 keyword=""):
+                 keyword=''):
         """
         :param keyword: Primary keyword for ``man`` command that would display
                         the man pages provided in value argument.
@@ -80,27 +80,27 @@ class IndentStyleInfo(StyleInfo):
 
 
 class IndentSizeInfo(StyleInfo):
-    description = "The number of columns used for each indentation level."
+    description = 'The number of columns used for each indentation level.'
     value_type = (int,)
     example_values = [2, 4]
 
 
 class TrailingWhitespaceInfo(StyleInfo):
-    description = ("Information representing whether whitespace characters "
-                   "preceding newline characters are allowed or not.")
+    description = ('Information representing whether whitespace characters '
+                   'preceding newline characters are allowed or not.')
     value_type = (bool,)
 
 
 class FinalNewlineInfo(StyleInfo):
-    description = ("Information representing whether to enformce file ending "
-                   " with a newline or not.")
+    description = ('Information representing whether to enformce file ending '
+                   ' with a newline or not.')
     value_type = (bool,)
 
 
 class CharsetInfo(StyleInfo):
-    description = "Information regarding character set."
+    description = 'Information regarding character set.'
     value_type = (str,)
-    example_values = ["utf-8", "latin1", "utf-8-bom"]
+    example_values = ['utf-8', 'latin1', 'utf-8-bom']
 
 
 class LineBreaksInfo(StyleInfo):
@@ -110,13 +110,13 @@ class LineBreaksInfo(StyleInfo):
 
 
 class MentionedTasksInfo(Info):
-    description = "Names of the tasks mentioned in the project configuration."
+    description = 'Names of the tasks mentioned in the project configuration.'
     value_type = ([str],)
     example_values = [['csslint', 'copy', 'quint', 'uglify']]
 
 
 class LintTaskInfo(Info):
-    description = "Information about a task used in project."
+    description = 'Information about a task used in project.'
     value_type = (str,)
     example_values = ['csslint', 'jshint']
 

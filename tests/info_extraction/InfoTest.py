@@ -30,8 +30,8 @@ class InfoTest(unittest.TestCase):
             example_values = ['coala', 420]
 
         class InfoB(Info):
-            description = "Info class without value_type"
-            example_values = [["literally", "anything"]]
+            description = 'Info class without value_type'
+            example_values = [['literally', 'anything']]
 
         self.info_a = InfoA(
             'source_file',
@@ -60,8 +60,8 @@ class InfoTest(unittest.TestCase):
     def test_value_type(self):
         with self.assertRaisesRegexp(
                 TypeError,
-                "value must be an instance of one of "
+                'value must be an instance of one of '
                 "\(<class 'str'>, <class 'int'>\) \(provided value: 5.5\)"):
-            self.InfoA("source_file", 5.5)
+            self.InfoA('source_file', 5.5)
 
-        self.InfoB("source_file", 5.5)
+        self.InfoB('source_file', 5.5)

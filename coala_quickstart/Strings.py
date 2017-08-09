@@ -14,20 +14,20 @@ LOGO_STRING = """
           Y           ,o8P
                oooo888P"
 """
-COALA_BEAR_LOGO = LOGO_STRING.split("\n")
+COALA_BEAR_LOGO = LOGO_STRING.split('\n')
 
-WELCOME_MESSAGES = ["Hi there! Awesome you decided to do some high "
-                    "quality coding. coala is just the tool you need!",
+WELCOME_MESSAGES = ['Hi there! Awesome you decided to do some high '
+                    'quality coding. coala is just the tool you need!',
 
-                    "You can configure coala to suit your needs. This "
-                    "is done with a settings file called a `.coafile` "
-                    "in the project directory.",
+                    'You can configure coala to suit your needs. This '
+                    'is done with a settings file called a `.coafile` '
+                    'in the project directory.',
 
                     "We can help you with that. Let's get started with "
-                    "some basic questions."]
+                    'some basic questions.']
 
 
-GLOB_HELP_URL = "http://coala.readthedocs.io/en/latest/Users/Glob_Patterns.html"
+GLOB_HELP_URL = 'http://coala.readthedocs.io/en/latest/Users/Glob_Patterns.html'
 GLOB_HELP = """
 File globs are a very concise way to specify a large
 number of files. You may give multiple file globs
@@ -40,8 +40,8 @@ all its contents but exclude your .git directory and all
 question and `.git/**,**/*.o` for the second question.
 """.format(GLOB_HELP_URL)
 
-BEAR_DOCS_URL = ("https://github.com/coala/bear-docs/blob/master/"
-                 "README.rst#supported-languages")
+BEAR_DOCS_URL = ('https://github.com/coala/bear-docs/blob/master/'
+                 'README.rst#supported-languages')
 BEAR_HELP = """
 A coala bear is a plugin that contains the checking routines. It may be
 language specific or language independent. This makes coala completely

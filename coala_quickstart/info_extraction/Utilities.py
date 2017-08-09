@@ -28,8 +28,8 @@ def assert_type_signature(value, type_signature, argname):
         type_signature = (type_signature,)
     else:
         if not isinstance(type_signature, iterables):
-            raise TypeError("type_signature must be an Iterable or a type "
-                            "object. Provided value: {}".format(
+            raise TypeError('type_signature must be an Iterable or a type '
+                            'object. Provided value: {}'.format(
                                 type_signature))
     for typ in type_signature:
         if value == typ or (isinstance(typ, type) and isinstance(value, typ)):
@@ -39,5 +39,5 @@ def assert_type_signature(value, type_signature, argname):
                 assert_type_signature(v, typ, argname)
             return True
 
-    raise TypeError("{} must be an instance of one of {} (provided value: "
-                    "{})".format(argname, type_signature, repr(value)))
+    raise TypeError('{} must be an instance of one of {} (provided value: '
+                    '{})'.format(argname, type_signature, repr(value)))

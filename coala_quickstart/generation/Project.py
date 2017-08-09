@@ -81,8 +81,8 @@ def print_used_languages(printer, results):
         and percentage usage in the project as the second value.
     """
     printer.print(
-        "The following languages have been automatically detected:")
+        'The following languages have been automatically detected:')
     for lang, percent in results:
-        formatted_line = "{:>25}: {:>2}%".format(lang, int(percent))
-        printer.print(formatted_line, color="cyan")
+        formatted_line = '{:>25}: {:>2}%'.format(lang, int(percent))
+        printer.print(formatted_line, color='cyan')
     printer.print()
