@@ -1,0 +1,11 @@
+
+# Start of gitignore
+buildtest
+ignore.c
+/testignore
+/upload.c
+/*.py
+*.pyc
+__pycache__
+# End of gitignore
+            
