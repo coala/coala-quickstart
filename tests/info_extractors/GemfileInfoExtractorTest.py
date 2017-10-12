@@ -40,22 +40,22 @@ class GemfileInfoExtractorTest(unittest.TestCase):
     def test_extracted_information(self):
 
         with generate_files(
-              ["Gemfile"],
+              ['Gemfile'],
               [test_file],
               self.current_dir) as gen_file:
 
             self.uut = GemfileInfoExtractor(
-                ["Gemfile"],
+                ['Gemfile'],
                 self.current_dir)
 
             extracted_info = self.uut.extract_information()
             extracted_info = extracted_info[
-                os.path.normcase("Gemfile")]
+                os.path.normcase('Gemfile')]
 
             information_types = extracted_info.keys()
 
-            self.assertIn("ProjectDependencyInfo", information_types)
-            dep_info = extracted_info["ProjectDependencyInfo"]
+            self.assertIn('ProjectDependencyInfo', information_types)
+            dep_info = extracted_info['ProjectDependencyInfo']
             self.assertEqual(len(dep_info), 9)
 
             gems = [('some-gem', ''), ('puppet-lint', '2.1.1'),
@@ -64,9 +64,9 @@ class GemfileInfoExtractorTest(unittest.TestCase):
                     ('ruby-debug19', ''), ('omniauth', '>= 0.2.6')]
 
             deps = [(d.value, d.version.value) for d in dep_info]
-            self.assertNotIn(("not_to_consider", ""), deps)
+            self.assertNotIn(('not_to_consider', ''), deps)
             for gem in gems:
                 self.assertIn(gem, deps)
 
             source_urls = [d.url for d in dep_info]
-            self.assertIn("https://gems.example.com", source_urls)
+            self.assertIn('https://gems.example.com', source_urls)

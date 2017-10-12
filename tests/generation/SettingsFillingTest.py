@@ -112,7 +112,7 @@ class SettingsFillingTest(unittest.TestCase):
         self.section.append(Setting('bears', 'SpaceConsistencyTestBear'))
 
         with simulate_console_inputs() as generator, bear_test_module():
-            with generate_files([".editorconfig"],
+            with generate_files(['.editorconfig'],
                                 [editorconfig_1],
                                 self.project_dir) as gen_files:
                 extracted_info = collect_info(self.project_dir)
@@ -135,9 +135,9 @@ class SettingsFillingTest(unittest.TestCase):
 
         self.section.append(Setting('bears', 'SpaceConsistencyTestBear'))
 
-        with simulate_console_inputs("False") as generator, \
+        with simulate_console_inputs('False') as generator, \
                 bear_test_module(), retrieve_stdout() as sio:
-            with generate_files([".editorconfig"],
+            with generate_files(['.editorconfig'],
                                 [editorconfig_2],
                                 self.project_dir):
                 extracted_info = collect_info(self.project_dir)
@@ -159,14 +159,14 @@ class SettingsFillingTest(unittest.TestCase):
 
     def test_fill_settings_section_match_no_conflicts(self):
         self.section = Section('test')
-        self.section["files"] = "*.py"
+        self.section['files'] = '*.py'
         sections = {'test': self.section}
 
         self.section.append(Setting('bears', 'SpaceConsistencyTestBear'))
 
         with simulate_console_inputs() as generator, bear_test_module():
-            with generate_files([".editorconfig", "hello.py"],
-                                [editorconfig_3, "pass"],
+            with generate_files(['.editorconfig', 'hello.py'],
+                                [editorconfig_3, 'pass'],
                                 self.project_dir) as gen_files:
                 extracted_info = collect_info(self.project_dir)
                 local_bears, global_bears = fill_settings(
@@ -184,15 +184,15 @@ class SettingsFillingTest(unittest.TestCase):
 
     def test_fill_settings_section_match_with_conflicts(self):
         self.section = Section('test1')
-        self.section["files"] = "hello.py"
+        self.section['files'] = 'hello.py'
         sections = {'test1': self.section}
 
         self.section.append(Setting('bears', 'SpaceConsistencyTestBear'))
 
-        with simulate_console_inputs("False") as generator, \
+        with simulate_console_inputs('False') as generator, \
                 bear_test_module(), retrieve_stdout() as sio:
-            with generate_files([".editorconfig", "hello.py"],
-                                [editorconfig_4, "pass"],
+            with generate_files(['.editorconfig', 'hello.py'],
+                                [editorconfig_4, 'pass'],
                                 self.project_dir):
                 extracted_info = collect_info(self.project_dir)
                 local_bears, global_bears = fill_settings(
@@ -240,7 +240,7 @@ class SettingsFillingTest(unittest.TestCase):
         self.assertEqual(len(new_section.contents), 3)
 
     def test_fill_section_invalid_type(self):
-        with simulate_console_inputs("fd", "fd", 0, 0) as generator:
+        with simulate_console_inputs('fd', 'fd', 0, 0) as generator:
             new_section = fill_section(self.section,
                                        acquire_settings,
                                        self.log_printer,
@@ -259,7 +259,7 @@ class SettingsFillingTest(unittest.TestCase):
         sections = {'test': self.section}
         self.section.append(Setting('bears', 'SpaceConsistencyTestBear'))
 
-        with simulate_console_inputs(" hell yeah!!! ") as generator, \
+        with simulate_console_inputs(' hell yeah!!! ') as generator, \
                 bear_test_module():
             local_bears, global_bears = fill_settings(
                 sections, acquire_settings, self.log_printer,
@@ -272,7 +272,7 @@ class SettingsFillingTest(unittest.TestCase):
         self.section = Section('test')
         sections = {'test': self.section}
         self.section.append(Setting('bears', 'SpaceConsistencyTestBear'))
-        with simulate_console_inputs("not in a million years") as generator, \
+        with simulate_console_inputs('not in a million years') as generator, \
                 bear_test_module():
             local_bears, global_bears = fill_settings(
                 sections, acquire_settings, self.log_printer,
@@ -285,7 +285,7 @@ class SettingsFillingTest(unittest.TestCase):
         self.section = Section('test')
         sections = {'test': self.section}
         self.section.append(Setting('bears', 'SpaceConsistencyTestBear'))
-        with simulate_console_inputs("don't know", "nah") as generator, \
+        with simulate_console_inputs("don't know", 'nah') as generator, \
                 bear_test_module():
             local_bears, global_bears = fill_settings(
                 sections, acquire_settings, self.log_printer,

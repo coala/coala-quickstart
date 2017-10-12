@@ -54,7 +54,7 @@ class InfoExtractorTest(unittest.TestCase):
                 return []
 
         class WrongSupportedInfoExtractor(InfoExtractor):
-            supported_file_globs = ("**",)
+            supported_file_globs = ('**',)
             supported_info_kinds = (DummyInfoExtractor,)
 
             def parse_file(self, fname, file_content):
@@ -68,7 +68,7 @@ class InfoExtractorTest(unittest.TestCase):
                             'Some random information it is!')]
 
         class TempfileExtractor(InfoExtractor):
-            supported_file_globs = ("tempfile**", "**tempfile")
+            supported_file_globs = ('tempfile**', '**tempfile')
 
             def parse_file(self, fname, file_content):
                 return file_content
@@ -223,9 +223,9 @@ class InfoExtractorTest(unittest.TestCase):
 
             with self.assertRaisesRegexp(
                     ValueError,
-                    ("The taraget file tmpfile_not_allowed does not match the "
+                    ('The taraget file tmpfile_not_allowed does not match the '
                      "supported file globs \('tempfile\*\*', '\*\*tempfile'\) "
-                     "of TempfileExtractor")):
+                     'of TempfileExtractor')):
                 uut = self.TempfileExtractor(
                     ['tempfile1', 'tmpfile_not_allowed'],
                     self.current_dir)
@@ -262,8 +262,8 @@ class InfoExtractorTest(unittest.TestCase):
 
             with self.assertRaisesRegexp(
                     ValueError,
-                    ("The class AnotherDummyInfo is not present in supported "
-                     "information kinds of WrongSupportedInfoExtractor")):
+                    ('The class AnotherDummyInfo is not present in supported '
+                     'information kinds of WrongSupportedInfoExtractor')):
 
                 uut.extract_information()
 

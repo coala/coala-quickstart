@@ -9,11 +9,11 @@ from coala_quickstart.info_extraction.Information import (
 
 
 class EditorconfigInfoExtractor(InfoExtractor):
-    supported_file_globs = (".editorconfig",)
+    supported_file_globs = ('.editorconfig',)
 
     spec_references = [
-        "http://editorconfig.org/#file-format-details",
-        "https://gitlab.com/coala/GSoC-2017/issues/172"]
+        'http://editorconfig.org/#file-format-details',
+        'https://gitlab.com/coala/GSoC-2017/issues/172']
 
     supported_info_kinds = (
         IndentStyleInfo, IndentSizeInfo, TrailingWhitespaceInfo,
@@ -29,15 +29,15 @@ class EditorconfigInfoExtractor(InfoExtractor):
             translated_regex = (
                     translate_editorconfig_section_to_regex(section_name))
             for key, value in config.items():
-                if key == "indent_size":
-                    if value == "tab":
+                if key == 'indent_size':
+                    if value == 'tab':
                         #  When set to "tab", the value of tab_width
                         # (if specified) will be used
-                        if config.get("tab_width"):
+                        if config.get('tab_width'):
                             results.append(
                                 IndentSizeInfo(
                                     fname,
-                                    int(config["tab_width"]),
+                                    int(config['tab_width']),
                                     scope=translated_regex,
                                     container_section=section_name))
                     else:
@@ -45,38 +45,38 @@ class EditorconfigInfoExtractor(InfoExtractor):
                             IndentSizeInfo(
                                 fname, int(value), scope=translated_regex,
                                 container_section=section_name))
-                if key == "indent_style":
+                if key == 'indent_style':
                     results.append(
                         IndentStyleInfo(
                             fname, value, scope=translated_regex,
                             container_section=section_name))
-                if key == "trim_trailing_whitespace":
-                    if value == "true":
+                if key == 'trim_trailing_whitespace':
+                    if value == 'true':
                         results.append(
                             TrailingWhitespaceInfo(
                                 fname, True, scope=translated_regex,
                                 container_section=section_name))
-                    if value == "false":
+                    if value == 'false':
                         results.append(
                             TrailingWhitespaceInfo(
                                 fname, False, scope=translated_regex,
                                 container_section=section_name))
-                if key == "insert_final_newline":
-                    if value == "true":
+                if key == 'insert_final_newline':
+                    if value == 'true':
                         results.append(
                             FinalNewlineInfo(
                                 fname, True, scope=translated_regex,
                                 container_section=section_name))
-                    if value == "false":
+                    if value == 'false':
                         results.append(
                             FinalNewlineInfo(
                                 fname, False, scope=translated_regex,
                                 container_section=section_name))
-                if key == "charset":
+                if key == 'charset':
                     results.append(
                         CharsetInfo(fname, value, scope=translated_regex,
                                     container_section=section_name))
-                if key == "end_of_line":
+                if key == 'end_of_line':
                     results.append(
                         LineBreaksInfo(fname, value, scope=translated_regex,
                                        container_section=section_name))
@@ -93,10 +93,10 @@ def editorconfig_file_match_method(files, info):
     :param info:  An ``Info`` instance stored inside an
                   ``EditorconfigInfoExtractor`` object.
     """
-    if info.source != ".editorconfig":
-        raise ValueError("The ``editorconfig_file_match_method`` received an"
-                         "``Info`` instance not extracted by "
-                         "``EditorconfigInfoExtractor``.")
+    if info.source != '.editorconfig':
+        raise ValueError('The ``editorconfig_file_match_method`` received an'
+                         '``Info`` instance not extracted by '
+                         '``EditorconfigInfoExtractor``.')
     accepted_files_regex = info.scope[0]
 
     for fname in files:

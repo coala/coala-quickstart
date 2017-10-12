@@ -38,7 +38,7 @@ def filter_relevant_bears(used_languages,
     """
     args = arg_parser.parse_args() if arg_parser else None
     log_printer = LogPrinter(NullPrinter())
-    used_languages.append(("All", 100))
+    used_languages.append(('All', 100))
 
     bears_by_lang = {
         lang: set(inverse_dicts(*get_filtered_bears([lang],
@@ -50,10 +50,10 @@ def filter_relevant_bears(used_languages,
 
     # Each language would also have the language independent bears. We remove
     # those and put them in the "All" category.
-    all_lang_bears = bears_by_lang["All"]
-    bears_by_lang = {lang: bears_by_lang[lang] - bears_by_lang["All"]
+    all_lang_bears = bears_by_lang['All']
+    bears_by_lang = {lang: bears_by_lang[lang] - bears_by_lang['All']
                      for lang, _ in used_languages}
-    bears_by_lang["All"] = all_lang_bears
+    bears_by_lang['All'] = all_lang_bears
 
     selected_bears = {}
     candidate_bears = copy.copy(bears_by_lang)
@@ -92,8 +92,8 @@ def filter_relevant_bears(used_languages,
                 lang_bears, desired_capabilities)
             candidate_bears[lang] = capable_bears
 
-    lint_task_info = extracted_info.get("LintTaskInfo", [])
-    project_dependency_info = extracted_info.get("ProjectDependencyInfo", [])
+    lint_task_info = extracted_info.get('LintTaskInfo', [])
+    project_dependency_info = extracted_info.get('ProjectDependencyInfo', [])
 
     # Use lint_task_info to propose bears to user.
     for lang, lang_bears in candidate_bears.items():
@@ -227,13 +227,13 @@ def print_relevant_bears(printer, relevant_bears, label='relevant'):
     if label == 'relevant':
         printer.print(BEAR_HELP)
 
-    printer.print("\nBased on the languages used in project the following "
-                  "bears have been identified to be %s:" % label)
+    printer.print('\nBased on the languages used in project the following '
+                  'bears have been identified to be %s:' % label)
     for language in relevant_bears:
-        printer.print("    [" + language + "]", color="green")
+        printer.print('    [' + language + ']', color='green')
         for bear in relevant_bears[language]:
-            printer.print("    " + bear.name, color="cyan")
-        printer.print("")
+            printer.print('    ' + bear.name, color='cyan')
+        printer.print('')
 
 
 def generate_requirements_map(bears):
@@ -253,9 +253,9 @@ def generate_requirements_map(bears):
     for bear in bears:
         for req in bear.REQUIREMENTS:
             to_add = {
-                "bear": bear,
-                "version": req.version,
-                "type": req.type
+                'bear': bear,
+                'version': req.version,
+                'type': req.type
             }
             requirements_meta[req.package] = to_add
     return requirements_meta
@@ -282,7 +282,7 @@ def get_bears_with_matching_dependencies(bears, dependency_info):
             # Check if names of requirements match
             if dep.value == req:
                 installed_version = dep.version.value
-                bear_requirement_version = req_info["version"]
+                bear_requirement_version = req_info['version']
                 if installed_version and bear_requirement_version:
                     is_newer_version = is_version_newer(
                         installed_version, bear_requirement_version)
@@ -404,10 +404,10 @@ def generate_capabilties_map(bears_by_lang):
             *[{bear: list(bear.CAN_FIX)} for bear in bears])
 
         for capability, bears in can_detect_meta.items():
-            capabilities_meta[capability][lang]["DETECT"] = bears
+            capabilities_meta[capability][lang]['DETECT'] = bears
 
         for capability, bears in can_fix_meta.items():
-            capabilities_meta[capability][lang]["FIX"] = bears
+            capabilities_meta[capability][lang]['FIX'] = bears
     return capabilities_meta
 
 
@@ -428,7 +428,7 @@ def remove_bears_with_conflicting_capabilties(bears_by_lang):
         capabilities_map = generate_capabilties_map({lang: bears})
         for cap in capabilities_map.keys():
             # bears that can fix the ``cap`` capabilitiy
-            fix_bears = capabilities_map[cap][lang].get("FIX")
+            fix_bears = capabilities_map[cap][lang].get('FIX')
             if fix_bears:
                 for bear in fix_bears:
                     if bear.check_prerequisites() is True:
@@ -441,7 +441,7 @@ def remove_bears_with_conflicting_capabilties(bears_by_lang):
                 lang_result.add(random.choice(fix_bears))
                 break
             # There were no bears to fix the capability
-            detect_bears = capabilities_map[cap][lang].get("DETECT")
+            detect_bears = capabilities_map[cap][lang].get('DETECT')
             if detect_bears:
                 for bear in detect_bears:
                     if bear.check_prerequisites() is True:
@@ -462,8 +462,8 @@ def is_version_newer(semver1, semver2):
         True if semver1 is latest or matches semver2,
         False otherwise.
     """
-    semver1 = tuple(map(int, (re.sub("[^0-9\.]", "", semver1).split("."))))
-    semver2 = tuple(map(int, (re.sub("[^0-9\.]", "", semver2).split("."))))
+    semver1 = tuple(map(int, (re.sub('[^0-9\.]', '', semver1).split('.'))))
+    semver2 = tuple(map(int, (re.sub('[^0-9\.]', '', semver2).split('.'))))
     return semver1 >= semver2
 
 
@@ -474,10 +474,10 @@ def prompt_to_activate(bear, printer):
     :param bear:    The name of the bear.
     :param printer: A `ConsolePrinter` object for console interaction.
     """
-    PROMPT_TO_ACTIVATE_STR = ("coala-quickstart has found {} to be useful "
-                              "based of dependencies discovered from your "
-                              "project files. \n Would you like to activate "
-                              "it? (y/n)")
+    PROMPT_TO_ACTIVATE_STR = ('coala-quickstart has found {} to be useful '
+                              'based of dependencies discovered from your '
+                              'project files. \n Would you like to activate '
+                              'it? (y/n)')
     printer.print(PROMPT_TO_ACTIVATE_STR)
 
     choice = input().lower()
@@ -497,11 +497,11 @@ def ask_to_select_capabilties(all_capabilities,
     Asks the users to select capabilties out of all_capabilities.
     """
     all_capabilities = sorted(all_capabilities)
-    PROMPT_QUESTION = ("What would you like the bears to detect or fix? "
-                       "Please select some bear capabilities using "
+    PROMPT_QUESTION = ('What would you like the bears to detect or fix? '
+                       'Please select some bear capabilities using '
                        "their numbers or just press 'Enter' to select"
-                       "default capabilities (highlighted in green)")
-    console_printer.print(PROMPT_QUESTION, color="yellow")
+                       'default capabilities (highlighted in green)')
+    console_printer.print(PROMPT_QUESTION, color='yellow')
 
     default_options = []
     total_options = len(all_capabilities) + 1
@@ -512,14 +512,14 @@ def ask_to_select_capabilties(all_capabilities,
             color = 'green'
             default_options.append(idx)
         console_printer.print(
-            "    {}. {}".format(idx + 1, cap), color=color)
+            '    {}. {}'.format(idx + 1, cap), color=color)
     console_printer.print(
-        "    {}. Select all default capabilities.".format(
-            total_options), color="cyan")
+        '    {}. Select all default capabilities.'.format(
+            total_options), color='cyan')
 
     selected_numbers = []
     try:
-        selected_numbers = list(map(int, re.split("\D+", input())))
+        selected_numbers = list(map(int, re.split('\D+', input())))
     except Exception:
         # Parsing failed, choose all the default capabilities
         selected_numbers = [total_options]
@@ -533,8 +533,8 @@ def ask_to_select_capabilties(all_capabilities,
             selected_capabilties += default_capabilities
         else:
             console_printer.print(
-                "{} is not a valid option. Please choose the right"
-                " option numbers".format(str(num)))
+                '{} is not a valid option. Please choose the right'
+                ' option numbers'.format(str(num)))
             ask_to_select_capabilties(all_capabilities,
                                       default_capabilities,
                                       console_printer)

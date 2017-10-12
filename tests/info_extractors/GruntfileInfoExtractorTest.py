@@ -129,16 +129,16 @@ class GruntfileInfoExtractorTest(unittest.TestCase):
     def test_extracted_information(self):
 
         with generate_files(
-              ["Gruntfile.js"],
+              ['Gruntfile.js'],
               [test_file],
               self.current_dir) as gen_file:
 
             self.uut = GruntfileInfoExtractor(
-                ["Gruntfile.js"],
+                ['Gruntfile.js'],
                 self.current_dir)
 
             extracted_info = self.uut.extract_information()
-            extracted_info = extracted_info[os.path.normcase("Gruntfile.js")]
+            extracted_info = extracted_info[os.path.normcase('Gruntfile.js')]
 
             information_types = extracted_info.keys()
 
@@ -177,12 +177,12 @@ class GruntfileInfoExtractorTest(unittest.TestCase):
             # in the form of tuple
             # (linter_name, include_paths, ignore_paths, config)
             defined_info = [
-                ("csslint", csslint_include_paths, None, None, csslint_config),
-                ("jshint", jshint_include_paths, None, None, jshint_config),
-                ("jscs", None, None, None, jscs_config),
-                ("some_lint_task", None, ['foo/**.bar'],
+                ('csslint', csslint_include_paths, None, None, csslint_config),
+                ('jshint', jshint_include_paths, None, None, jshint_config),
+                ('jscs', None, None, None, jscs_config),
+                ('some_lint_task', None, ['foo/**.bar'],
                     None, some_lint_task_config)]
-            info_name = "LintTaskInfo"
+            info_name = 'LintTaskInfo'
 
             self.assertIn(info_name, information_types)
             info_to_match = extracted_info[info_name]
@@ -207,7 +207,7 @@ class GruntfileInfoExtractorTest(unittest.TestCase):
                 'grunt-contrib-csslint', 'grunt-contrib-cssmin',
                 'grunt-contrib-jshint', 'grunt-contrib-qunit',
                 'grunt-contrib-uglify', 'grunt-contrib-watch', 'grunt-jscs']
-            info_name = "MentionedTasksInfo"
+            info_name = 'MentionedTasksInfo'
             self.assertIn(info_name, information_types)
             info_to_match = extracted_info[info_name]
             tasks_lists = [t.value for t in info_to_match]

@@ -400,7 +400,7 @@ def translate_editorconfig_section_to_regex(pat, nested=False):
                 num_range = NUMERIC_RANGE.match(pat[index:pos])
                 if num_range:
                     numeric_groups.append(map(int, num_range.groups()))
-                    result += "([+-]?\d+)"
+                    result += '([+-]?\d+)'
                 else:
                     inner_result, inner_groups = (
                         self.translate_pattern_to_regex(pat[index:pos],
@@ -425,8 +425,8 @@ def translate_editorconfig_section_to_regex(pat, nested=False):
             else:
                 result += '\\}'
         elif current_char == '/':
-            if pat[index:(index + 3)] == "**/":
-                result += "(?:/|/.*/)"
+            if pat[index:(index + 3)] == '**/':
+                result += '(?:/|/.*/)'
                 index += 3
             else:
                 result += '/'

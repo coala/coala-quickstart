@@ -12,11 +12,11 @@ class TestPopularLanguages(unittest.TestCase):
         self.printer = ConsolePrinter()
 
     def test_get_used_languages(self):
-        file_lists = [["/tmp/file.py", "/tmp/file.py"],
-                      ["/tmp/file.py", "/tmp/test.cpp"],
-                      ["/tmp/file.py"],
-                      ["/tmp/file.py", "/tmp/unknown.extension"],
-                      ["/tmp/unknown.extension"],
+        file_lists = [['/tmp/file.py', '/tmp/file.py'],
+                      ['/tmp/file.py', '/tmp/test.cpp'],
+                      ['/tmp/file.py'],
+                      ['/tmp/file.py', '/tmp/unknown.extension'],
+                      ['/tmp/unknown.extension'],
                       []]
         results = [[('Python', 100)],
                    [('Python', 50), ('C++', 50)],
@@ -33,14 +33,14 @@ class TestPopularLanguages(unittest.TestCase):
         with retrieve_stdout() as custom_stdout:
             print_used_languages(self.printer, [('Python', 100)])
             res = custom_stdout.getvalue()
-            self.assertIn("Python", res)
-            self.assertIn("100%", res)
+            self.assertIn('Python', res)
+            self.assertIn('100%', res)
 
         with retrieve_stdout() as custom_stdout:
             print_used_languages(self.printer, [('Python', 75), ('C++', 25)])
-            self.assertIn("75%\n", custom_stdout.getvalue())
+            self.assertIn('75%\n', custom_stdout.getvalue())
 
     def test_no_results(self):
         with retrieve_stdout() as custom_stdout:
             print_used_languages(self.printer, [])
-            self.assertNotIn("following langauges", custom_stdout.getvalue())
+            self.assertNotIn('following langauges', custom_stdout.getvalue())

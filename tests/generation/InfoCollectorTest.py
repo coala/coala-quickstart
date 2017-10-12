@@ -65,11 +65,11 @@ class InfoCollectorTest(unittest.TestCase):
         self.uut = collect_info
         self.test_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            "information_collector_testfiles")
+            'information_collector_testfiles')
 
     def test_collected_info(self):
 
-        files_to_create = ["package.json", ".editorconfig", "Gemfile"]
+        files_to_create = ['package.json', '.editorconfig', 'Gemfile']
         target_file_contents = [package_json, editorconfig, gemfile]
 
         with generate_files(

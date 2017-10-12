@@ -101,7 +101,7 @@ module.exports = function ( grunt ) {
 };
 """
 
-context_filenames = [".editorconfig", "package.json", "Gemfile", "Gruntfile.js"]
+context_filenames = ['.editorconfig', 'package.json', 'Gemfile', 'Gruntfile.js']
 context_file_contents = [editorconfig, package_json, gemfile, gruntfile]
 
 
@@ -110,7 +110,7 @@ class TestBears(unittest.TestCase):
     def setUp(self):
         self.project_dir = os.path.join(
             os.path.dirname(os.path.realpath(__file__)),
-            "project_dir")
+            'project_dir')
         os.makedirs(self.project_dir, exist_ok=True)
         self.arg_parser = _get_arg_parser()
         self.printer = ConsolePrinter()
@@ -126,10 +126,10 @@ class TestBears(unittest.TestCase):
                                     self.printer,
                                     self.arg_parser,
                                     {})
-        self.assertIn("C", res)
-        self.assertIn("Python", res)
-        self.assertTrue(len(res["C"]) > 0)
-        self.assertTrue(len(res["Python"]) > 0)
+        self.assertIn('C', res)
+        self.assertIn('Python', res)
+        self.assertTrue(len(res['C']) > 0)
+        self.assertTrue(len(res['Python']) > 0)
 
     def test_filter_relevant_bears_with_extracted_info(self):
         # results without extracted information
@@ -160,9 +160,9 @@ class TestBears(unittest.TestCase):
         # caputred by `ProjectDependencyInfo` from the dependency files
         # but are not part of the `IMPORTANT_BEARS_LIST` in Constants.py
         additional_bears_by_lang = {
-            "JavaScript": ["ESLintBear", "HappinessLintBear"],
-            "Ruby": [],
-            "All": []
+            'JavaScript': ['ESLintBear', 'HappinessLintBear'],
+            'Ruby': [],
+            'All': []
         }
         for lang in res_1:
             additional_bears = [bear.name for bear in res_2[lang]
@@ -182,7 +182,7 @@ class TestBears(unittest.TestCase):
             with generate_files(context_filenames,
                                 context_file_contents,
                                 self.project_dir):
-                with simulate_console_inputs("Yes") as generator:
+                with simulate_console_inputs('Yes') as generator:
                     extracted_info = collect_info(self.project_dir)
                     res_2 = filter_relevant_bears(languages,
                                                   self.printer,
@@ -192,7 +192,7 @@ class TestBears(unittest.TestCase):
 
             # Comparing both the scenarios
             additional_bears_by_lang = {
-                "All": ["NonOptionalSettingBear"]
+                'All': ['NonOptionalSettingBear']
             }
             for lang in res_1:
                 additional_bears = [bear.name for bear in res_2[lang]
@@ -206,8 +206,8 @@ class TestBears(unittest.TestCase):
                                 context_file_contents,
                                 self.project_dir):
                 with simulate_console_inputs(
-                        "Some random text which will not be accepted",
-                        "No") as generator:
+                        'Some random text which will not be accepted',
+                        'No') as generator:
                     extracted_info = collect_info(self.project_dir)
                     res_2 = filter_relevant_bears(languages,
                                                   self.printer,
@@ -217,7 +217,7 @@ class TestBears(unittest.TestCase):
 
             # This time there will be no additional bears
             additional_bears_by_lang = {
-                "All": []
+                'All': []
             }
             for lang in res_1:
                 additional_bears = [bear.name for bear in res_2[lang]
@@ -245,7 +245,7 @@ class TestBears(unittest.TestCase):
                 self.assertEqual(generator.last_input, 1)
 
             expected_results = {
-                "All": set(["SmellCapabilityBear"])
+                'All': set(['SmellCapabilityBear'])
             }
             for lang, lang_bears in expected_results.items():
                 for bear in lang_bears:
@@ -256,8 +256,8 @@ class TestBears(unittest.TestCase):
         # Reset the IMPORTANT_BEARS_LIST
         import coala_quickstart.generation.Bears as Bears
         Bears.IMPORTANT_BEARS_LIST = {
-            "JavaScript": "DoesNotExistBear",
-            "Python": "DoesNotExistAsWellBear"
+            'JavaScript': 'DoesNotExistBear',
+            'Python': 'DoesNotExistAsWellBear'
         }
 
         sys.argv.append('--no-filter-by-capabilities')
@@ -265,7 +265,7 @@ class TestBears(unittest.TestCase):
         with bear_test_module():
             languages = [('JavaScript', 70), ('Python', 20)]
             res = {}
-            with generate_files(["Gruntfile.js"],
+            with generate_files(['Gruntfile.js'],
                                 [gruntfile],
                                 self.project_dir) as gen_files:
                 extracted_info = collect_info(self.project_dir)
@@ -274,7 +274,7 @@ class TestBears(unittest.TestCase):
                                             self.arg_parser,
                                             extracted_info)
             expected_results = {
-                "JavaScript": set(["SomeLinterBear"]),
+                'JavaScript': set(['SomeLinterBear']),
             }
             for lang, lang_bears in expected_results.items():
                 for bear in lang_bears:
@@ -286,17 +286,17 @@ class TestBears(unittest.TestCase):
             print_relevant_bears(self.printer, filter_relevant_bears(
                 [('Python', 70), ('Unknown', 30)], self.printer,
                 self.arg_parser, {}))
-            self.assertIn("PycodestyleBear", custom_stdout.getvalue())
+            self.assertIn('PycodestyleBear', custom_stdout.getvalue())
 
     def test_bears_allow_incomplete_sections_mode(self):
         sys.argv.append('--ci')
         sys.argv.append('--allow-incomplete-sections')
         orig_cwd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        os.chdir("bears_ci_testfiles")
+        os.chdir('bears_ci_testfiles')
         with retrieve_stdout() as custom_stdout:
             main()
-            self.assertNotIn("usable",
+            self.assertNotIn('usable',
                              custom_stdout.getvalue())
         os.remove('.coafile')
         os.chdir(orig_cwd)
@@ -305,10 +305,10 @@ class TestBears(unittest.TestCase):
         sys.argv.append('--ci')
         orig_cwd = os.getcwd()
         os.chdir(os.path.dirname(os.path.realpath(__file__)))
-        os.chdir("bears_ci_testfiles")
+        os.chdir('bears_ci_testfiles')
         with retrieve_stdout() as custom_stdout:
             main()
-            self.assertIn("usable",
+            self.assertIn('usable',
                           custom_stdout.getvalue())
         os.remove('.coafile')
         os.chdir(orig_cwd)
@@ -325,7 +325,7 @@ class TestBears(unittest.TestCase):
                                             self.arg_parser,
                                             {})
                 self.assertEqual(generator.last_input, -1)
-            self.assertEqual(res, {"All": set()})
+            self.assertEqual(res, {'All': set()})
 
     def test_filter_bears_ci_mode(self):
         sys.argv.append('--ci')
@@ -338,7 +338,7 @@ class TestBears(unittest.TestCase):
             with generate_files(context_filenames,
                                 context_file_contents,
                                 self.project_dir):
-                with simulate_console_inputs("Yes") as generator:
+                with simulate_console_inputs('Yes') as generator:
                     extracted_info = collect_info(self.project_dir)
                     res_2 = filter_relevant_bears(languages,
                                                   self.printer,
@@ -350,7 +350,7 @@ class TestBears(unittest.TestCase):
             # The NonOptionalSettingBear is not selected due to non-optional
             # setting value in non-interactive mode.
             additional_bears_by_lang = {
-                "All": []
+                'All': []
             }
             for lang in res_1:
                 additional_bears = [bear.name for bear in res_2[lang]

@@ -15,16 +15,16 @@ class TestLogo(unittest.TestCase):
         with retrieve_stdout() as custom_stdout:
             print_side_by_side(
                 self.printer,
-                ["Left side content."],
-                ["Right side content",
-                 "that is longer than the",
-                 "left side."],
+                ['Left side content.'],
+                ['Right side content',
+                 'that is longer than the',
+                 'left side.'],
                 limit=80)
             self.assertIn(
-                "side content.\x1b[0m \x1b[34mRight side",
+                'side content.\x1b[0m \x1b[34mRight side',
                 custom_stdout.getvalue())
 
     def test_print_welcome_message(self):
         with retrieve_stdout() as custom_stdout:
             print_welcome_message(self.printer)
-            self.assertIn("o88Oo", custom_stdout.getvalue())
+            self.assertIn('o88Oo', custom_stdout.getvalue())

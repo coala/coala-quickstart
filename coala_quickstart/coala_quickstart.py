@@ -30,7 +30,7 @@ def _get_arg_parser():
 coala-quickstart automatically creates a .coafile for use by coala.
 """
     arg_parser = argparse.ArgumentParser(
-        prog="coala-quickstart",
+        prog='coala-quickstart',
         description=description,
         add_help=True
     )
@@ -72,7 +72,7 @@ def main():
         fpc.activate()
         print_welcome_message(printer)
         project_dir = ask_question(
-            "What is your project directory?",
+            'What is your project directory?',
             default=project_dir,
             typecast=valid_path)
         fpc.deactivate()
