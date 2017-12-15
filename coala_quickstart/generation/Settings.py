@@ -1,4 +1,5 @@
 import os
+import itertools
 from collections import OrderedDict
 from datetime import date
 
@@ -48,20 +49,24 @@ def generate_ignore_field(project_dir,
     :param extset:
         A dict with language name as key and a set of extensions as
         value. This includes only those extensions used by the project.
+    :ignore_globs:
+        generator object get_gitignore_glob
     :return:
         A comma-separated string containing the globs to ignore.
     """
 
+    ignore_globs, ignore_globs_backup = itertools.tee(ignore_globs)
+
     all_files = set(collect_files(
         "**",
         null_printer,
-        ignored_file_paths=ignore_globs))
+        ignored_file_paths=ignore_globs_backup))
 
     ignores = []
     for glob in ignore_globs:
         gitignore_files = {file
                            for file in collect_files([glob], null_printer)}
-        if not all_files.isdisjoint(gitignore_files):
+        if all_files.isdisjoint(gitignore_files):
             ignores.append(os.path.relpath(glob, project_dir))
 
     return ", ".join(ignores)
