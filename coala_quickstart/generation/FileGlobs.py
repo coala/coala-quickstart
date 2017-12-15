@@ -1,4 +1,5 @@
 import os
+import itertools
 
 from coalib.parsing.Globbing import glob_escape
 from coala_quickstart.generation.Utilities import get_gitignore_glob
@@ -34,7 +35,9 @@ def get_project_files(log_printer,
         printer.print("The contents of your .gitignore file for the project "
                       "will be automatically loaded as the files to ignore.",
                       color="green")
-        ignore_globs = get_gitignore_glob(project_dir)
+        ignore_globs, ignore_globs_backup = itertools.tee(
+            get_gitignore_glob(project_dir))
+
     if non_interactive and not ignore_globs:
         ignore_globs = []
 
@@ -46,6 +49,7 @@ def get_project_files(log_printer,
             "project directory?",
             printer=printer,
             typecast=list)
+        ignore_globs, ignore_globs_backup = itertools.tee(ignore_globs)
         file_path_completer.deactivate()
     printer.print()
 
@@ -53,7 +57,7 @@ def get_project_files(log_printer,
     file_path_globs = [os.path.join(
         escaped_project_dir, glob_exp) for glob_exp in file_globs]
     ignore_path_globs = [os.path.join(
-        escaped_project_dir, glob_exp) for glob_exp in ignore_globs]
+        escaped_project_dir, glob_exp) for glob_exp in ignore_globs_backup]
 
     ignore_path_globs.append(os.path.join(escaped_project_dir, ".git/**"))
 
