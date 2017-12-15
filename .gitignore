@@ -38,3 +38,4 @@ Goopfile.lock
 docs/API/
 venv
 *.egg-info
+rultor_github_secrets.sh
