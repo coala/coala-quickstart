@@ -16,6 +16,13 @@ from coala_quickstart.generation.Project import get_used_languages
 
 class SettingsTest(unittest.TestCase):
 
+    def path_leaf(self, path):
+        """
+        :return: The file name from the given path.
+        """
+        head, tail = os.path.split(path)
+        return tail or os.path.basename(head)
+
     def setUp(self):
         self.project_dir = os.getcwd()
         self.printer = ConsolePrinter()
@@ -41,6 +48,32 @@ class SettingsTest(unittest.TestCase):
             line = f.readline()
 
         self.assertEqual(result_comment, line)
+
+    def test_allow_complete_section_mode_with_ignore_globs(self):
+        project_dir = "/repo"
+        project_files = ['/repo/hello.html']
+        ignore_globs = ["/repo/style.css"]
+        used_languages = list(get_used_languages(project_files))
+        relevant_bears = filter_relevant_bears(
+            used_languages, self.printer, self.arg_parser, {})
+
+        res = generate_settings(
+            project_dir, project_files, ignore_globs, relevant_bears, {}, True)
+
+        bears_list = res["all.HTML"]["bears"].value.replace(" ", "").split(",")
+
+        files_list = res["all.HTML"]["files"].value.replace(" ", "").split(",")
+
+        self.assertEqual(
+            ['HTMLLintBear', 'coalaBear', 'BootLintBear',
+             'LicenseCheckBear', 'SpaceConsistencyBear', 'KeywordBear',
+             'LineLengthBear', 'DuplicateFileBear'].sort(),
+            bears_list.sort())
+
+        ignore_file = str(os.path.normpath(self.path_leaf(
+            str(res["all"]["ignore"]))))
+        self.assertEqual(['**.html'], files_list)
+        self.assertEqual('style.css', ignore_file)
 
     def test_allow_complete_section_mode(self):
         project_dir = "/repo"

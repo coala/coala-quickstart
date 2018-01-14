@@ -61,8 +61,7 @@ def generate_ignore_field(project_dir,
     for glob in ignore_globs:
         gitignore_files = {file
                            for file in collect_files([glob], null_printer)}
-        if not all_files.isdisjoint(gitignore_files):
-            ignores.append(os.path.relpath(glob, project_dir))
+        ignores.append(os.path.relpath(glob, project_dir))
 
     return ", ".join(ignores)
 

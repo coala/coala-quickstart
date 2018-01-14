@@ -49,6 +49,7 @@ def get_project_files(log_printer,
         file_path_completer.deactivate()
     printer.print()
 
+    ignore_globs = list(ignore_globs)
     escaped_project_dir = glob_escape(project_dir)
     file_path_globs = [os.path.join(
         escaped_project_dir, glob_exp) for glob_exp in file_globs]
