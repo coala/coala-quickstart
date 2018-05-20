@@ -2,6 +2,7 @@ import os
 import sys
 import unittest
 from copy import deepcopy
+from collections import OrderedDict
 
 
 from pyprint.ConsolePrinter import ConsolePrinter
@@ -304,10 +305,27 @@ class TestBears(unittest.TestCase):
 
     def test_print_relevant_bears(self):
         with retrieve_stdout() as custom_stdout:
-            print_relevant_bears(self.printer, filter_relevant_bears(
-                [('Python', 70), ('Unknown', 30)], self.printer,
-                self.arg_parser, {}))
+            languages = [('Python', 70), ('Unknown', 30)]
+            bears_filtered = filter_relevant_bears(languages,
+                                                   self.printer,
+                                                   self.arg_parser, {})
+            relevant_bears = OrderedDict([('unusable', {}),
+                                          ('usable', bears_filtered)])
+
+            print_relevant_bears(self.printer, relevant_bears)
             self.assertIn("PycodestyleBear", custom_stdout.getvalue())
+            # Should print only the usable bears
+            self.assertNotIn("dropped",
+                             custom_stdout.getvalue())
+
+    def test_print_relevant_bears_no_bears(self):
+        with retrieve_stdout() as custom_stdout:
+            print_relevant_bears(self.printer, OrderedDict([('unusable', {}),
+                                                            ('usable', {})]))
+            # No bears to print
+            self.assertNotIn("usable", custom_stdout.getvalue())
+            self.assertNotIn("dropped", custom_stdout.getvalue())
+            self.assertIn("No relevant", custom_stdout.getvalue())
 
     def test_bears_allow_incomplete_sections_mode(self):
         sys.argv.append('--ci')
@@ -317,7 +335,10 @@ class TestBears(unittest.TestCase):
         os.chdir("bears_ci_testfiles")
         with retrieve_stdout() as custom_stdout:
             main()
-            self.assertNotIn("usable",
+            # Should print only the usable bears
+            self.assertIn("usable",
+                          custom_stdout.getvalue())
+            self.assertNotIn("dropped",
                              custom_stdout.getvalue())
         os.remove('.coafile')
         os.chdir(orig_cwd)
@@ -329,8 +350,10 @@ class TestBears(unittest.TestCase):
         os.chdir("bears_ci_testfiles")
         with retrieve_stdout() as custom_stdout:
             main()
+            # Should print both the usable and unusable bears
             self.assertIn("usable",
                           custom_stdout.getvalue())
+            self.assertIn("dropped", custom_stdout.getvalue())
         os.remove('.coafile')
         os.chdir(orig_cwd)
 

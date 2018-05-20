@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import sys
+from collections import OrderedDict
 
 from pyprint.ConsolePrinter import ConsolePrinter
 
@@ -17,7 +18,7 @@ from coala_quickstart.generation.Bears import (
     filter_relevant_bears,
     print_relevant_bears,
     get_non_optional_settings_bears,
-    remove_unusable_bears,
+    filter_unusable_bears,
 )
 from coala_quickstart.generation.Settings import (
     generate_settings, write_coafile)
@@ -103,18 +104,27 @@ def main():
 
     extracted_information = collect_info(project_dir)
 
-    relevant_bears = filter_relevant_bears(
+    selected_bears = filter_relevant_bears(
         used_languages, printer, arg_parser, extracted_information)
 
     if args.green_mode:
-        collect_bear_settings(relevant_bears)
+        collect_bear_settings(selected_bears)
+
+    # OrderedDict used for print_relevant_bears to first print unusable bears
+    relevant_bears = OrderedDict(
+            [('unusable', {}),
+             ('usable',
+                 selected_bears)])
+
+    if args.non_interactive and not args.incomplete_sections:
+        unusable_bears = get_non_optional_settings_bears(
+            relevant_bears['usable'])
+        filter_unusable_bears(relevant_bears, unusable_bears)
 
     print_relevant_bears(printer, relevant_bears)
 
-    if args.non_interactive and not args.incomplete_sections:
-        unusable_bears = get_non_optional_settings_bears(relevant_bears)
-        remove_unusable_bears(relevant_bears, unusable_bears)
-        print_relevant_bears(printer, relevant_bears, 'usable')
+    # Drop unusable bears
+    relevant_bears = relevant_bears['usable']
 
     settings = generate_settings(
         project_dir,
