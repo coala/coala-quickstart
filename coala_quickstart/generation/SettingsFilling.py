@@ -39,12 +39,12 @@ def fill_section(section,
         needed = bear.get_non_optional_settings()
         for key in needed:
             if key in prel_needed_settings:
-                prel_needed_settings[key]["bears"].append(bear.name)
+                prel_needed_settings[key]['bears'].append(bear.name)
             else:
                 prel_needed_settings[key] = {
-                    "help_text": needed[key][0],
-                    "bears": [bear.name],
-                    "type": needed[key][1],
+                    'help_text': needed[key][0],
+                    'bears': [bear.name],
+                    'type': needed[key][1],
                 }
 
     # Strip away existent settings.
@@ -57,8 +57,8 @@ def fill_section(section,
     satisfied_settings = []
 
     for setting in needed_settings.keys():
-        setting_bears = needed_settings[setting]["bears"]
-        setting_help_text = needed_settings[setting]["help_text"]
+        setting_bears = needed_settings[setting]['bears']
+        setting_help_text = needed_settings[setting]['help_text']
         to_fill_values = list(autofill_value_if_possible(
             setting, section, setting_bears, extracted_info))
 
@@ -108,17 +108,17 @@ def autofill_value_if_possible(setting_key,
     """
     if INFO_SETTING_MAPS.get(setting_key):
         for mapping in INFO_SETTING_MAPS[setting_key]:
-            scope = mapping["scope"]
+            scope = mapping['scope']
             if (scope.check_belongs_to_scope(
                     section, bears)):
                 # look for the values in extracted information
                 # from all the ``InfoExtractor`` instances.
                 values = extracted_information.get(
-                    mapping["info_kind"].__name__)
+                    mapping['info_kind'].__name__)
                 if values:
                     for val in values:
                         if scope.check_is_applicable_information(section, val):
-                            yield mapping["mapper_function"](val)
+                            yield mapping['mapper_function'](val)
 
 
 def is_autofill_possible(setting_key,
@@ -130,11 +130,11 @@ def is_autofill_possible(setting_key,
     """
     if INFO_SETTING_MAPS.get(setting_key):
         for mapping in INFO_SETTING_MAPS[setting_key]:
-            scope = mapping["scope"]
+            scope = mapping['scope']
             if (scope.check_belongs_to_scope(
                     section, bears)):
                 values = extracted_info.get(
-                    mapping["info_kind"].__name__)
+                    mapping['info_kind'].__name__)
                 for val in values:
                     if scope.check_is_applicable_information(section, val):
                         return True
@@ -191,7 +191,7 @@ def require_setting(setting_name, setting_info, section):
     :return:             The preferred value provided by the user
                          for the setting.
     """
-    needed = join_names(setting_info["bears"])
+    needed = join_names(setting_info['bears'])
 
     STR_GET_VAL_FOR_SETTING = ('\nPlease enter a value for the setting {} '
                                '({}) needed by {} for section {}: ')
@@ -207,31 +207,31 @@ def require_setting(setting_name, setting_info, section):
 
     while True:
         print(colored(STR_GET_VAL_FOR_SETTING.format(repr(setting_name),
-                                                     setting_info["help_text"],
+                                                     setting_info['help_text'],
                                                      needed,
                                                      repr(section.name)),
                       REQUIRED_SETTINGS_COLOR))
 
         user_input = input()
 
-        if setting_info["type"]:
+        if setting_info['type']:
             try:
-                if setting_info["type"] is bool:
-                    processed_input = user_input.strip().strip("!").lower()
+                if setting_info['type'] is bool:
+                    processed_input = user_input.strip().strip('!').lower()
                     if processed_input in TRUE_STRINGS:
-                        user_input = "True"
+                        user_input = 'True'
                     elif processed_input in FALSE_STRINGS:
-                        user_input = "False"
+                        user_input = 'False'
                     else:
                         raise ValueError
                 else:
-                    setting_info["type"](user_input)
+                    setting_info['type'](user_input)
 
                 break
 
             except ValueError:
                 print(colored(
-                    STR_REPORT_INVALID_VALUE_TYPE.format(setting_info["type"]),
+                    STR_REPORT_INVALID_VALUE_TYPE.format(setting_info['type']),
                     REPORT_INVALID_TYPE_COLOR))
 
     return user_input
@@ -269,10 +269,10 @@ def acquire_settings(log_printer, settings_dict, section):
     result = {}
     for setting_name, setting_info in sorted(
             settings_dict.items(),
-            key=lambda x: (join_names(x[1]["bears"]), x[0])):
+            key=lambda x: (join_names(x[1]['bears']), x[0])):
         # As quickstart generates language-based sections, the value for
         # `language` setting can be filled automatically.
-        if setting_name == "language":
+        if setting_name == 'language':
             value = section.name
         else:
             value = require_setting(setting_name, setting_info, section)

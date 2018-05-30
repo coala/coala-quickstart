@@ -6,9 +6,9 @@ from coala_quickstart.info_extraction.Information import (
 
 
 class GemfileInfoExtractor(InfoExtractor):
-    supported_files = ("Gemfile",)
+    supported_files = ('Gemfile',)
 
-    spec_references = ["https://gitlab.com/coala/GSoC-2017/issues/167", ]
+    spec_references = ['https://gitlab.com/coala/GSoC-2017/issues/167', ]
     supported_information_kinds = (
         ProjectDependencyInfo, VersionInfo)
 

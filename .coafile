@@ -1,4 +1,4 @@
-[Default]
+[all]
 files = *.py, coala_quickstart/**/*.py, tests/**.py
 ignore =
     coalib/tests/bearlib/languages/documentation/documentation_extraction_testdata/data.py,
@@ -7,7 +7,7 @@ ignore =
 max_line_length = 80
 use_spaces = True
 
-[python]
+[all.python]
 # Patches may conflict with autopep8 so putting them in own section so they
 # will be executed sequentially; also we need the LineLengthBear to double
 # check the line length because PEP8Bear sometimes isn't able to correct the
@@ -18,20 +18,27 @@ default_actions =
     SpaceConsistencyBear: ApplyPatchAction,
     PyUnusedCodeBear: ApplyPatchAction
 
-[autopep8]
+[all.quotes]
+bears = QuotesBear
+language = Python
+preferred_quotation = '
+default_actions = **: ApplyPatchAction
+ignore += tests/**
+
+[all.autopep8]
 bears = PEP8Bear, PycodestyleBear
 pycodestyle_ignore = E121, E123, E126, E226, E252, W503, W504, W605
 
 default_actions = PEP8Bear: ApplyPatchAction
 
-[linelength]  # Sometimes autopep8 makes too long lines, need to check after!
+[all.linelength]  # Sometimes autopep8 makes too long lines, need to check after!
 bears = LineLengthBear
 
-[commit]
+[all.commit]
 bears = GitCommitBear
 shortlog_trailing_period = False
 shortlog_regex = ([^:]*|[^:]+[^ ]: [A-Z0-9*].*)
 
-[yml]
+[all.yml]
 bears = YAMLLintBear
 files = *.yml, .ci/*.yml, tests/**/*.yml

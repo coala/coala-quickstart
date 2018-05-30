@@ -14,29 +14,29 @@ with open('requirements.txt') as requirements:
 with open('test-requirements.txt') as requirements:
     test_required = requirements.read().splitlines()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     setup(name='coala-quickstart',
           version='0.4.0',
           description='A quickstart tool for coala',
-          author="The coala developers",
-          maintainer="Satwik Kansal, Adrian Zatreanu, Alexandros Dimos, "
-                     "Adhityaa Chandrasekar",
+          author='The coala developers',
+          maintainer='Satwik Kansal, Adrian Zatreanu, Alexandros Dimos, '
+                     'Adhityaa Chandrasekar',
           maintainer_email=('satwikkansal@gmail.com, '
                             'adrianzatreanu1@gmail.com, '
                             'alexandros.dimos.95@gmail.com, '
                             'c.adhityaa@gmail.com'),
           url='https://github.com/coala/coala-quickstart',
           platforms='any',
-          packages=find_packages(exclude=["build.*", "*.tests.*", "*.tests"]),
+          packages=find_packages(exclude=['build.*', '*.tests.*', '*.tests']),
           install_requires=required,
           tests_require=test_required,
-          license="AGPL-3.0",
-          long_description="coala-quickstart is a tool to help you "
-                           "quickly and easily get started with "
-                           "coala.",
+          license='AGPL-3.0',
+          long_description='coala-quickstart is a tool to help you '
+                           'quickly and easily get started with '
+                           'coala.',
           entry_points={
-              "console_scripts": [
-                  "coala-quickstart = coala_quickstart.coala_quickstart:main"
+              'console_scripts': [
+                  'coala-quickstart = coala_quickstart.coala_quickstart:main',
                   ]},
           # from http://pypi.python.org/pypi?%3Aaction=list_classifiers
           classifiers=[

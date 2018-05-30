@@ -10,7 +10,7 @@ from coala_quickstart.info_extractors.Utilities import (
 
 
 class GruntfileInfoExtractor(InfoExtractor):
-    supported_file_globs = ("Gruntfile.js",)
+    supported_file_globs = ('Gruntfile.js',)
     supported_info_kinds = (LintTaskInfo, MentionedTasksInfo)
 
     def parse_file(self, fname, file_content):
@@ -36,12 +36,12 @@ class GruntfileInfoExtractor(InfoExtractor):
                 linter_config = config[linter]
                 globs = self.extract_globs(linter_config)
                 linter_config = self.get_task_config(linter_config)
-                if globs.get("include_globs"):
-                    include_paths = globs["include_globs"]
+                if globs.get('include_globs'):
+                    include_paths = globs['include_globs']
                     include_paths_info = IncludePathsInfo(
                         fname, include_paths) if include_paths else None
-                if globs.get("ignore_globs"):
-                    ignore_paths = globs["ignore_globs"]
+                if globs.get('ignore_globs'):
+                    ignore_paths = globs['ignore_globs']
                     ignore_paths_info = IgnorePathsInfo(
                         fname, ignore_paths) if ignore_paths else None
             results.append(
@@ -66,19 +66,19 @@ class GruntfileInfoExtractor(InfoExtractor):
             A list of lint subtasks
         """
         # task names to match
-        keys_to_match = ["lint"]
+        keys_to_match = ['lint']
 
         # Serch for grunt.registerTask() identifiers
-        search_results = search_object_recursively(parsed_file, "callee", {
-            "computed": False,
-            "type": "MemberExpression",
-            "property": {
-                "name": "registerTask",
-                "type": "Identifier"
+        search_results = search_object_recursively(parsed_file, 'callee', {
+            'computed': False,
+            'type': 'MemberExpression',
+            'property': {
+                'name': 'registerTask',
+                'type': 'Identifier',
                 },
-            "object": {
-                "name": "grunt",
-                "type": "Identifier"
+            'object': {
+                'name': 'grunt',
+                'type': 'Identifier',
                 }
             })
 
@@ -86,21 +86,21 @@ class GruntfileInfoExtractor(InfoExtractor):
         is_lint = False
 
         for res in search_results:
-            arguments = res["object"].get("arguments")
+            arguments = res['object'].get('arguments')
             # check if the task is a lint sub-task
             if arguments:
                 for arg in arguments:
-                    if arg.get("value") in keys_to_match:
+                    if arg.get('value') in keys_to_match:
                         is_lint = True
                         break
 
             if is_lint:
                 for arg in arguments:
-                    if (arg.get("elements") and
-                            arg.get("type") == "ArrayExpression"):
+                    if (arg.get('elements') and
+                            arg.get('type') == 'ArrayExpression'):
                         lint_subtasks += [
-                            elem["value"].split(":")[0]
-                            for elem in arg["elements"]
+                            elem['value'].split(':')[0]
+                            for elem in arg['elements']
                         ]
                         is_lint = False
 
@@ -128,29 +128,29 @@ class GruntfileInfoExtractor(InfoExtractor):
         """
         result = {}
         search_results = search_object_recursively(
-            parsed_file, "callee",
+            parsed_file, 'callee',
             {
-                "computed": False,
-                "type": "MemberExpression",
-                "property": {
-                    "name": "initConfig",
-                    "type": "Identifier"
+                'computed': False,
+                'type': 'MemberExpression',
+                'property': {
+                    'name': 'initConfig',
+                    'type': 'Identifier',
                 },
-                "object": {
-                    "name": "grunt",
-                    "type": "Identifier"
+                'object': {
+                    'name': 'grunt',
+                    'type': 'Identifier',
                 }
             })
 
         for s in search_results:
-            if "object" in s and "arguments" in s["object"]:
-                for arg in s["object"]["arguments"]:
-                    if "properties" in arg:
-                        for p in arg["properties"]:
-                            if ("key" in p and "name" in p["key"]
-                                    and p["key"]["name"] in tasks):
-                                name = p["key"]["name"]
-                                result[name] = p.get("value")
+            if 'object' in s and 'arguments' in s['object']:
+                for arg in s['object']['arguments']:
+                    if 'properties' in arg:
+                        for p in arg['properties']:
+                            if ('key' in p and 'name' in p['key']
+                                    and p['key']['name'] in tasks):
+                                name = p['key']['name']
+                                result[name] = p.get('value')
 
         return result
 
@@ -161,26 +161,26 @@ class GruntfileInfoExtractor(InfoExtractor):
         ``grunt.loadNpmTasks( "grunt-contrib-concat" );``
         """
         search_results = search_object_recursively(
-            parsed_file, "callee",
+            parsed_file, 'callee',
             {
-                "computed": False,
-                "type": "MemberExpression",
-                "property": {
-                    "name": "loadNpmTasks",
-                    "type": "Identifier"
+                'computed': False,
+                'type': 'MemberExpression',
+                'property': {
+                    'name': 'loadNpmTasks',
+                    'type': 'Identifier',
                     },
-                "object": {
-                    "name": "grunt",
-                    "type": "Identifier"
+                'object': {
+                    'name': 'grunt',
+                    'type': 'Identifier',
                     }
             })
 
         tasks_found = []
 
         for result in search_results:
-            if result.get("object"):
+            if result.get('object'):
                 try:
-                    task_name = result["object"]["arguments"][0]["value"]
+                    task_name = result['object']['arguments'][0]['value']
                     tasks_found.append(task_name)
                 except KeyError:
                     pass
@@ -198,26 +198,26 @@ class GruntfileInfoExtractor(InfoExtractor):
             list containing values of all the elements of type "Literal"
             found in the obj.
         """
-        if (obj and obj.get("type") == "ArrayExpression" and
-                "elements" in obj.keys()):
+        if (obj and obj.get('type') == 'ArrayExpression' and
+                'elements' in obj.keys()):
             return [
-                elem["value"]
-                for elem in obj["elements"] if elem["type"] == "Literal"
+                elem['value']
+                for elem in obj['elements'] if elem['type'] == 'Literal'
             ]
 
-        elif obj and obj.get("type") == "ObjectExpression":
-            if (obj.get("value") and
-                obj["value"]["type"] == "ArrayExpression" and
-                    "elements" in obj["value"].keys()):
+        elif obj and obj.get('type') == 'ObjectExpression':
+            if (obj.get('value') and
+                obj['value']['type'] == 'ArrayExpression' and
+                    'elements' in obj['value'].keys()):
                 return [
-                    elem["value"]
-                    for elem in obj["elements"] if elem["type"] == "Literal"
+                    elem['value']
+                    for elem in obj['elements'] if elem['type'] == 'Literal'
                 ]
             else:
-                return self.extract_literals_from_expression(obj.get("value"))
+                return self.extract_literals_from_expression(obj.get('value'))
 
-        elif obj and obj.get("type") == "Property":
-            return self.extract_literals_from_expression(obj.get("value"))
+        elif obj and obj.get('type') == 'Property':
+            return self.extract_literals_from_expression(obj.get('value'))
 
         else:
             return []
@@ -238,27 +238,27 @@ class GruntfileInfoExtractor(InfoExtractor):
             key-value pairs.
         """
         result = {}
-        for prop in parsed_config["properties"]:
+        for prop in parsed_config['properties']:
             prop_value = None
-            if prop["value"]["type"] == "Identifier":
-                prop_value = prop["value"]["name"]
+            if prop['value']['type'] == 'Identifier':
+                prop_value = prop['value']['name']
 
-            elif prop["value"]["type"] == "Literal":
-                prop_value = prop["value"]["value"]
+            elif prop['value']['type'] == 'Literal':
+                prop_value = prop['value']['value']
 
-            elif prop["value"]["type"] == "ObjectExpression":
-                prop_value = self.get_task_config(prop["value"])
+            elif prop['value']['type'] == 'ObjectExpression':
+                prop_value = self.get_task_config(prop['value'])
 
-            elif prop["value"]["type"] == "ArrayExpression":
+            elif prop['value']['type'] == 'ArrayExpression':
                 prop_value = self.extract_literals_from_expression(prop)
 
             else:
                 logging.warn(
-                    "quickstart was not able to parse the value "
-                    "of the config {}".format(
-                        prop["key"]["name"]))
+                    'quickstart was not able to parse the value '
+                    'of the config {}'.format(
+                        prop['key']['name']))
 
-            result[prop["key"]["name"]] = prop_value
+            result[prop['key']['name']] = prop_value
 
         return result
 
@@ -273,21 +273,21 @@ class GruntfileInfoExtractor(InfoExtractor):
             A dictionary with keys `include_globs` and `ignore_globs` and
             values being the corresponding list of globs.
         """
-        to_use_keys = ["all", "main", "files", "src", "sources"]
-        to_ignore_keys = ["ignore", "exclude"]
+        to_use_keys = ['all', 'main', 'files', 'src', 'sources']
+        to_ignore_keys = ['ignore', 'exclude']
 
         result = {
-            "include_globs": [],
-            "ignore_globs": []
+            'include_globs': [],
+            'ignore_globs': [],
         }
 
-        if parsed_config.get("type") == "ObjectExpression":
-            for prop in parsed_config["properties"]:
-                if prop["key"]["name"] in to_use_keys:
-                    result["include_globs"] += (
+        if parsed_config.get('type') == 'ObjectExpression':
+            for prop in parsed_config['properties']:
+                if prop['key']['name'] in to_use_keys:
+                    result['include_globs'] += (
                         self.extract_literals_from_expression(prop))
-                elif prop["key"]["name"] in to_ignore_keys:
-                    result["ignore_globs"] += (
+                elif prop['key']['name'] in to_ignore_keys:
+                    result['ignore_globs'] += (
                         self.extract_literals_from_expression(prop))
 
         return result

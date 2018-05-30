@@ -14,16 +14,16 @@ def collect_info(project_dir):
     classes and returns them as a dictionary.
     """
     editorconfig_info = EditorconfigInfoExtractor(
-        [".editorconfig"], project_dir).extract_information()
+        ['.editorconfig'], project_dir).extract_information()
 
     package_json_info = PackageJSONInfoExtractor(
-        ["package.json"], project_dir).extract_information()
+        ['package.json'], project_dir).extract_information()
 
     gemfile_info = GemfileInfoExtractor(
-        ["Gemfile"], project_dir).extract_information()
+        ['Gemfile'], project_dir).extract_information()
 
     gruntfile_info = GruntfileInfoExtractor(
-        ["Gruntfile.js"], project_dir).extract_information()
+        ['Gruntfile.js'], project_dir).extract_information()
 
     extracted_info = aggregate_info([
         editorconfig_info, package_json_info, gemfile_info, gruntfile_info])

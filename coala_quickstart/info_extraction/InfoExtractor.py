@@ -26,8 +26,8 @@ class InfoExtractor:
         target_files = self.retrieve_files(target_globs, project_directory)
         for fname in target_files:
             if not fnmatch(fname, self.supported_file_globs):
-                raise ValueError("The taraget file {} does not match the "
-                                 "supported file globs {} of {}".format(
+                raise ValueError('The taraget file {} does not match the '
+                                 'supported file globs {} of {}'.format(
                                     fname,
                                     self.supported_file_globs,
                                     self.__class__.__name__))
@@ -60,8 +60,8 @@ class InfoExtractor:
         """
         for info in info_to_add:
             if not isinstance(info, self.supported_info_kinds):
-                raise ValueError("The class {} is not present in "
-                                 "supported information kinds of {}".format(
+                raise ValueError('The class {} is not present in '
+                                 'supported information kinds of {}'.format(
                                     info.name,
                                     self.__class__.__name__))
             if not info.extractor:

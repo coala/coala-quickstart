@@ -5,8 +5,8 @@ from coala_quickstart.Strings import COALA_BEAR_LOGO, WELCOME_MESSAGES
 def print_side_by_side(printer,
                        left=[],
                        right=[],
-                       left_color="white",
-                       right_color="blue",
+                       left_color='white',
+                       right_color='blue',
                        limit=80):
     """
     Prints the the given lines side by side. Example usage:
@@ -44,15 +44,15 @@ def print_side_by_side(printer,
     max_left_length = len(max(left, key=len))
 
     for line in range(len(left) - len(right)):
-        right.append("")
+        right.append('')
     for line in range(len(right) - len(left)):
-        left.append("")
+        left.append('')
 
     for left_line, right_line in zip(left, right):
-        printer.print(left_line, color=left_color, end="")
+        printer.print(left_line, color=left_color, end='')
         printer.print(
-            " " * (max_left_length - len(left_line) + 1),
-            end="")
+            ' ' * (max_left_length - len(left_line) + 1),
+            end='')
         printer.print(right_line, color=right_color)
 
 
@@ -64,9 +64,9 @@ def print_welcome_message(printer):
         A ``ConsolePrinter`` object used for console interaction.
     """
     max_length = 80 - len(max(COALA_BEAR_LOGO, key=len))
-    text_lines = [""]
+    text_lines = ['']
     for welcome_message in WELCOME_MESSAGES:
-        text_lines += [""]
+        text_lines += ['']
         text_lines += textwrap.wrap(welcome_message, max_length)
 
     print_side_by_side(

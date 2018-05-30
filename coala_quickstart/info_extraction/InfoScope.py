@@ -44,12 +44,12 @@ class InfoScope:
         :param allowed_extractors:
             list of allowed ``InfoExtractor`` derived classes for the scope.
         """
-        assert_type_signature(level, ["global", "section", "bear"], "level")
+        assert_type_signature(level, ['global', 'section', 'bear'], 'level')
 
         self.level = level
-        if level == "section":
+        if level == 'section':
             self.sections = sections
-        elif level == "bear":
+        elif level == 'bear':
             self.sections = sections
             self.bears = bears
         self.section_match_method = section_match_method
@@ -63,10 +63,10 @@ class InfoScope:
         Checks if the given section_name and bear_name
         belong to the ``InfoScope`` or not.
         """
-        if self.level == "global":
+        if self.level == 'global':
             return True
 
-        elif self.level == "section":
+        elif self.level == 'section':
             if section_name in self.sections:
                 return True
         else:
@@ -91,8 +91,8 @@ class InfoScope:
         `allowed_extractors`. If none of them is specified, True
         is returned.
         """
-        if self.section_match_method and section.get("files").value:
-            if not self.section_match_method(section["files"], info):
+        if self.section_match_method and section.get('files').value:
+            if not self.section_match_method(section['files'], info):
                 return False
 
         if not self.allowed_sources and not self.allowed_extractors:

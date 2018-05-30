@@ -24,7 +24,7 @@ class Info:
         if not self.value_type:
             self.value_type = (object,)
 
-        assert_type_signature(value, self.value_type, "value")
+        assert_type_signature(value, self.value_type, 'value')
         self.source = source
         self._value = value
         self.extractor = extractor

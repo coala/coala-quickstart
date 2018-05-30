@@ -45,13 +45,13 @@ def search_object_recursively(search_object,
             if k == key:
                 if value is not None and v == value:
                     results.append({
-                            "object": search_object,
-                            "path": path
+                        'object': search_object,
+                        'path': path,
                     })
                 elif value is None:
                     results.append({
-                        "object": v,
-                        "path": path
+                        'object': v,
+                        'path': path,
                     })
             elif isinstance(v, supported_types):
                 results += search_object_recursively(v,
@@ -61,7 +61,7 @@ def search_object_recursively(search_object,
                                                      idx=-1)
     else:
         raise TypeError(
-            "The object to be searched should only contain these types: {}"
+            'The object to be searched should only contain these types: {}'
             .format(','.join([str(t) for t in supported_types])))
 
     return results
