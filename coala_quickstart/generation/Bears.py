@@ -153,7 +153,7 @@ def filter_relevant_bears(used_languages,
         filtered_bears = remove_bears_with_conflicting_capabilties(
             filtered_bears)
 
-        # Add to the selectecd_bears
+        # Add to the selected_bears
         for lang, lang_bears in filtered_bears.items():
             if not selected_bears.get(lang):
                 selected_bears[lang] = lang_bears
