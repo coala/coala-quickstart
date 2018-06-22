@@ -50,7 +50,7 @@ class SettingTypes:
     Categorizes the settings into Type bool and Type others
     """
 
-    def __init__(self, settings, function, bear, trigger):
+    def __init__(self, settings, functions, bear, trigger):
         """
         :param settings:
             Either a dict of non-optional settings of the form:
@@ -58,9 +58,10 @@ class SettingTypes:
             or
             a dict of optional settings of the form:
             {'setting_name': default_values,}
-        :param function:
-            The function object i.e. either the run() method or
-            the create_arguments() method of the bear.
+        :param functions:
+            A list of function objects i.e. either containing the run() method
+            or the create_arguments() + generate_config() methods of the linter
+            bears.
         :param bear:
             The current bear object.
         :param trigger:
@@ -69,15 +70,16 @@ class SettingTypes:
         """
         self.settings_bool = []
         self.settings_others = []
-        self.fillup_settings(function, settings, bear, trigger)
+        self.fillup_settings(functions, settings, bear, trigger)
 
-    def fillup_settings(self, function, settings, bear, trigger):
+    def fillup_settings(self, functions, settings, bear, trigger):
         """
         Fill settings_bool and settings_others depending upon whether the
         particular setting by the bear takes a bool value or any other.
-        :param function:
-            The function object i.e. either the run() method or
-            the create_arguments() method of the bear.
+        :param functions:
+            A list of function objects i.e. either containing the run() method
+            or the create_arguments() + generate_config() methods of the linter
+            bears.
         :param settings:
             Either a dict of non-optional settings of the form:
             {'setting_name': ('Description.', <class 'type'>),}
@@ -92,49 +94,76 @@ class SettingTypes:
         """
         for key in settings:
             if trigger == 'optional':
-                self.fillup_optional_settings(key, function)
+                self.fillup_optional_settings(key, functions)
             elif trigger == 'non-optional':
-                self.fillup_non_optional_settings(key, function, bear)
+                self.fillup_non_optional_settings(key, functions, bear)
             else:
                 raise ValueError('Invalid trigger Type')
 
-    def fillup_optional_settings(self, key, func):
+    def fillup_optional_settings(self, key, funcs):
         """
         Function to populate the optional settings
         for the classes to store metadata.
         :param key:
             The setting value as a string.
-        :param func:
-            The function object. Either create_arguments() for linter bears
-            or run() for other bears.
+        :param funcs:
+            A list of function objects i.e. either containing the run() method
+            or the create_arguments() + generate_config() methods of the linter
+            bears.
         """
-        present_in_annot = in_annot(func, key)
+        present_in_annot = False
+        for func in funcs:
+            inside_annot = in_annot(func, key)
+            if inside_annot is not False:
+                present_in_annot = inside_annot
+                break
 
         if present_in_annot:
             self.diff_bool_others(key, present_in_annot)
         else:
-            self.diff_bool_others_default(key, get_default_args(func)[key])
+            for func in funcs:
+                if key in get_default_args(func):
+                    self.diff_bool_others_default(
+                        key, get_default_args(func)[key])
 
-    def fillup_non_optional_settings(self, key, func, bear):
+    def fillup_non_optional_settings(self, key, funcs, bear):
         """
         Function to populate the non-optional settings
         for the classes to store metadata.
         :param key:
             The setting value as a string.
-        :param func:
-            The function object. Either create_arguments() for linter bears
-            or run() for other bears.
+        :param funcs:
+            A list of function objects i.e. either containing the run() method
+            or the create_arguments() + generate_config() methods of the linter
+            bears.
         :param bear:
             The bear object.
         """
-        present_in_annot = in_annot(func, key)
-        present_in_default_args = in_default_args(func, key)
-        present_in_all_args = in_all_args(func, key)
+        present_in_annot = False
+        present_in_default_args = False
+        present_in_all_args = False
+        function = None
+
+        for func in funcs:
+            present_in_annot = in_annot(func, key)
+            if present_in_annot is not False:
+                break
+
+        for func in funcs:
+            present_in_default_args = in_default_args(func, key)
+            if present_in_default_args:
+                break
+
+        for func in funcs:
+            present_in_all_args = in_all_args(func, key)
+            if present_in_all_args:
+                function = func
+                break
 
         if present_in_annot:
             self.diff_bool_others(key, present_in_annot)
         elif present_in_all_args and not present_in_default_args:
-            self.diff_bool_others(key, get_all_args(func)[key])
+            self.diff_bool_others(key, get_all_args(function)[key])
         else:
             self.parse_dep_tree(bear, key)
 
@@ -205,6 +234,7 @@ class BearSettings:
             A bear class object.
         """
         self.bear = bear
+        functions = None
         function = bear.create_arguments if (
             'create_arguments' in dir(bear)) else bear.run
         function_name = 'create_arguments' if (
@@ -216,27 +246,50 @@ class BearSettings:
         if original_function is not None:
             function = original_function
 
-        optional_settings = get_default_args(function)
+        if function_name is 'run':
+            optional_settings = get_default_args(function)
+            functions = [function]
+        else:
+            optional_settings_create_arguments = get_default_args(function)
+            optional_settings_generate_config = {}
+            # Appending the default arguments of bear method generate_config()
+            # to those, with that of create_arguments().
+            if hasattr(bear, 'generate_config'):
+                gen_config_func = bear.generate_config
+                # Again getting the actual method if it is decorated.
+                gen_config = search_for_orig(gen_config_func,
+                                             'generate_config')
+                if gen_config is not None:
+                    gen_config_func = gen_config
+                optional_settings_generate_config = get_default_args(
+                    gen_config_func)
+                functions = [function, gen_config_func]
+            optional_settings_create_arguments.update(
+                optional_settings_generate_config)
+            optional_settings = optional_settings_create_arguments
+            functions = [function] if functions is None else functions
+
         self.create_setting_types_obj(optional_settings, non_optional_settings,
-                                      function, bear)
+                                      functions, bear)
 
     def create_setting_types_obj(self, optional_settings,
-                                 non_optional_settings, function, bear):
+                                 non_optional_settings, functions, bear):
         """
         :param optional_settings:
             A dict of optional settings for the bear.
         :param non_optional_settings:
             A dict of non-optional settings for the bear.
-        :param function:
-            The function object i.e. either the run() method or
-            the create_arguments() method of the bear.
+        :param functions:
+            A list of function objects i.e. either containing the run() method
+            or the create_arguments() + generate_config() methods of the linter
+            bears.
         :param bear:
             The current bear object.
         """
         self.non_optional_settings = SettingTypes(
-            non_optional_settings, function, bear, trigger='non-optional')
+            non_optional_settings, functions, bear, trigger='non-optional')
         self.optional_settings = SettingTypes(
-            optional_settings, function, bear, trigger='optional')
+            optional_settings, functions, bear, trigger='optional')
 
 
 def collect_bear_settings(bears):

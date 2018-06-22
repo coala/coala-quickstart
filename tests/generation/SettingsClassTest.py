@@ -9,6 +9,9 @@ from tests.test_bears.AllKindsOfSettingsDependentDecoratedBear import (
     AllKindsOfSettingsDependentDecoratedBear)
 from tests.test_bears.AllKindsOfSettingsBaseBear import (
     AllKindsOfSettingsBaseBear)
+from tests.test_bears.AnotherLinterBear import AnotherLinterBear
+from tests.test_bears.SomeLinterBear import SomeLinterBear
+from tests.test_bears.YetAnotherLinterBear import YetAnotherLinterBear
 from tests.test_bears.BearA import BearA
 
 
@@ -23,7 +26,8 @@ class TestSettingsClass(unittest.TestCase):
                           {AllKindsOfSettingsDependentBear,
                            AllKindsOfSettingsDependentDecoratedBear,
                            AllKindsOfSettingsBaseBear,
-                           BearA}}
+                           BearA, SomeLinterBear, AnotherLinterBear,
+                           YetAnotherLinterBear}}
 
         bear_settings_obj = collect_bear_settings(relevant_bears)
 
@@ -117,6 +121,55 @@ class TestSettingsClass(unittest.TestCase):
         obj = bear_settings_obj[k].optional_settings
         self.assertCountEqual(obj.settings_bool, [])
         self.assertCountEqual(obj.settings_others, [])
+
+        # The following tests are for testing out the sorting of settings
+        # into Type bool and other Types using the test bears
+        # SomeLinterBear and YetAnotherLinterBear. These tests ensure that
+        # the method create_arguments() is parsed correctly for its settings
+        # for linter bears.
+
+        for index, i in enumerate(bear_settings_obj):
+            if i.bear == SomeLinterBear:
+                k = index
+                break
+        obj = bear_settings_obj[k].non_optional_settings
+        self.assertCountEqual(obj.settings_bool, [])
+        self.assertCountEqual(obj.settings_others, [])
+        obj = bear_settings_obj[k].optional_settings
+        self.assertCountEqual(obj.settings_bool, [])
+        self.assertCountEqual(obj.settings_others, [])
+
+        # YetAnotherLinterBear is also added because SomeLinterBear did not
+        # have any valid output to test against.
+
+        for index, i in enumerate(bear_settings_obj):
+            if i.bear == YetAnotherLinterBear:
+                k = index
+                break
+        obj = bear_settings_obj[k].non_optional_settings
+        self.assertCountEqual(obj.settings_bool, [])
+        self.assertCountEqual(obj.settings_others, ['nonopsetting'])
+        obj = bear_settings_obj[k].optional_settings
+        self.assertCountEqual(obj.settings_bool, ['someoptionalsetting'])
+        self.assertCountEqual(obj.settings_others, [])
+
+        # The following test is for testing out the sorting of settings
+        # into Type bool and other Types using the test bear
+        # AnotherLinterBear. This test is added primarily to check that
+        # the settings from create_arguments() as well as generate_config()
+        # are populated inside the classes (to store metadata) for which
+        # the test is being written, for linter bears.
+
+        for index, i in enumerate(bear_settings_obj):
+            if i.bear == AnotherLinterBear:
+                k = index
+                break
+        obj = bear_settings_obj[k].non_optional_settings
+        self.assertCountEqual(obj.settings_bool, ['yes'])
+        self.assertCountEqual(obj.settings_others, ['nonopsetting', 'rick'])
+        obj = bear_settings_obj[k].optional_settings
+        self.assertCountEqual(obj.settings_bool, ['someoptionalsetting'])
+        self.assertCountEqual(obj.settings_others, ['makman2'])
 
     def test_invalid_trigger(self):
         with self.assertRaises(ValueError, msg='Invalid trigger Type'):
