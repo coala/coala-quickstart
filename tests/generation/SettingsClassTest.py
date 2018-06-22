@@ -120,5 +120,5 @@ class TestSettingsClass(unittest.TestCase):
 
     def test_invalid_trigger(self):
         with self.assertRaises(ValueError, msg='Invalid trigger Type'):
-            setting = SettingTypes({'a': bool}, None, '', None,
+            setting = SettingTypes({'a': bool}, None, None,
                                    'wubalubadubdub')

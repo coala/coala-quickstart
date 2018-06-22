@@ -50,7 +50,7 @@ class SettingTypes:
     Categorizes the settings into Type bool and Type others
     """
 
-    def __init__(self, settings, function, function_name, bear, trigger):
+    def __init__(self, settings, function, bear, trigger):
         """
         :param settings:
             Either a dict of non-optional settings of the form:
@@ -61,8 +61,6 @@ class SettingTypes:
         :param function:
             The function object i.e. either the run() method or
             the create_arguments() method of the bear.
-        :param function_name:
-            Name of the function, either 'run' or 'create_arguments'
         :param bear:
             The current bear object.
         :param trigger:
@@ -220,11 +218,10 @@ class BearSettings:
 
         optional_settings = get_default_args(function)
         self.create_setting_types_obj(optional_settings, non_optional_settings,
-                                      function, function_name, bear)
+                                      function, bear)
 
     def create_setting_types_obj(self, optional_settings,
-                                 non_optional_settings, function,
-                                 function_name, bear):
+                                 non_optional_settings, function, bear):
         """
         :param optional_settings:
             A dict of optional settings for the bear.
@@ -233,17 +230,13 @@ class BearSettings:
         :param function:
             The function object i.e. either the run() method or
             the create_arguments() method of the bear.
-        :param function_name:
-            Name of the function, either 'run' or 'create_arguments'
         :param bear:
             The current bear object.
         """
         self.non_optional_settings = SettingTypes(
-            non_optional_settings, function, function_name, bear,
-            trigger='non-optional')
+            non_optional_settings, function, bear, trigger='non-optional')
         self.optional_settings = SettingTypes(
-            optional_settings, function, function_name, bear,
-            trigger='optional')
+            optional_settings, function, bear, trigger='optional')
 
 
 def collect_bear_settings(bears):
