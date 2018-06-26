@@ -16,6 +16,30 @@ def in_annot(func, key):
     return func.__annotations__[key] if key in func.__annotations__ else False
 
 
+def in_annot_recursive(bear, key):
+    """
+    Checks if a setting name as key is present in function
+    annotations, recursively through the bear dependencies.
+    :param bear:
+        The bear object.
+    :param key:
+        The setting name as a string.
+    :return:
+        The value of type annotated or False.
+    """
+    found = False
+    func = bear.run
+    if key in func.__annotations__:
+        return func.__annotations__[key]
+    else:
+        found = False
+        for dep in bear.BEAR_DEPS:
+            found = in_annot_recursive(dep, key)
+            if found is not False:
+                return found
+        return False
+
+
 def in_default_args(func, key):
     """
     Checks if a setting name as key is present in function
@@ -42,6 +66,23 @@ def in_all_args(func, key):
         True if key is present in args of a function else False.
     """
     return True if key in get_all_args(func) else False
+
+
+def parse_dep_tree_optional(bear):
+    """
+    Parse the dependency tree of the bears looking for optional settings.
+    :param bear:
+        The bear object for which to get optional settings and parse the
+        dependency tree further.
+    :return:
+        Dict of optional settings of the current bear and recursively
+        all the optional settings of its dependencies.
+    """
+    deps = bear.BEAR_DEPS
+    optional_settings = get_default_args(bear.run)
+    for dep in deps:
+        optional_settings.update(parse_dep_tree_optional(dep))
+    return optional_settings
 
 
 class SettingTypes:
@@ -94,13 +135,13 @@ class SettingTypes:
         """
         for key in settings:
             if trigger == 'optional':
-                self.fillup_optional_settings(key, functions)
+                self.fillup_optional_settings(key, functions, bear, settings)
             elif trigger == 'non-optional':
                 self.fillup_non_optional_settings(key, functions, bear)
             else:
                 raise ValueError('Invalid trigger Type')
 
-    def fillup_optional_settings(self, key, funcs):
+    def fillup_optional_settings(self, key, funcs, bear, settings):
         """
         Function to populate the optional settings
         for the classes to store metadata.
@@ -110,21 +151,27 @@ class SettingTypes:
             A list of function objects i.e. either containing the run() method
             or the create_arguments() + generate_config() methods of the linter
             bears.
+        :param bear:
+            The bear object.
+        :param settings:
+            Dict of optional bear settings of the form:
+            {'setting_name': default_values,}
         """
         present_in_annot = False
-        for func in funcs:
-            inside_annot = in_annot(func, key)
-            if inside_annot is not False:
-                present_in_annot = inside_annot
-                break
+        if len(funcs) == 1:
+            present_in_annot = in_annot_recursive(bear, key)
+        else:
+            for func in funcs:
+                inside_annot = in_annot(func, key)
+                if inside_annot is not False:
+                    present_in_annot = inside_annot
+                    break
 
         if present_in_annot:
             self.diff_bool_others(key, present_in_annot)
         else:
-            for func in funcs:
-                if key in get_default_args(func):
-                    self.diff_bool_others_default(
-                        key, get_default_args(func)[key])
+            self.diff_bool_others_default(
+                key, settings[key])
 
     def fillup_non_optional_settings(self, key, funcs, bear):
         """
@@ -165,9 +212,9 @@ class SettingTypes:
         elif present_in_all_args and not present_in_default_args:
             self.diff_bool_others(key, get_all_args(function)[key])
         else:
-            self.parse_dep_tree(bear, key)
+            self.parse_dep_tree_non_optional(bear, key)
 
-    def parse_dep_tree(self, bear, key):
+    def parse_dep_tree_non_optional(self, bear, key):
         """
         Parses the bear's dependency tree looking for
         non-optional setting and their Type.
@@ -187,7 +234,7 @@ class SettingTypes:
                     del settings[pointer]
                 if key in settings:
                     self.diff_bool_others(key, settings[key])
-            self.parse_dep_tree(dep, key)
+            self.parse_dep_tree_non_optional(dep, key)
 
     def diff_bool_others(self, key, check):
         """
@@ -247,7 +294,10 @@ class BearSettings:
             function = original_function
 
         if function_name is 'run':
+            # Recursively look for optional settings (which have a default
+            # value) inside BEAR_DEPS
             optional_settings = get_default_args(function)
+            optional_settings.update(parse_dep_tree_optional(self.bear))
             functions = [function]
         else:
             optional_settings_create_arguments = get_default_args(function)
