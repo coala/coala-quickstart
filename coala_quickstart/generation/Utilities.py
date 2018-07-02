@@ -161,3 +161,35 @@ def search_for_orig(decorated, orig_name):
             if hasattr(obj, '__closure__') and obj.__closure__:
                 found = search_for_orig(obj, orig_name)
                 return found
+
+
+def concatenate(dict1, dict2):
+    """
+    Concatenates 2 dicts of the type:
+    eg.
+
+    dict1:
+    {'key1': {value1, value2},
+     'key2': {value3, value4}}
+
+    dict2:
+    {'key2': {value4, value5},
+     'key3': {value6, value7}}
+
+    output:
+    {'key1': {value1, value2},
+     'key2': {value3, value4, value5},
+     'key3': {value6, value7}}
+
+    :return:
+        The concatenated dict.
+    """
+    for key in dict1:
+        if key in dict2:
+            dict1[key] = dict1[key].union(dict2[key])
+
+    for key in dict2:
+        if key not in dict1:
+            dict1[key] = dict2[key]
+
+    return dict1
