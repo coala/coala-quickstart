@@ -1,0 +1,125 @@
+dir_structure:
+- .coafile
+- coala_quickstart:
+  - all.coafile
+  - info_extractors:
+    - PackageJSONInfoExtractor.py
+    - EditorconfigInfoExtractor.py
+    - EditorconfigParsing.py
+    - __init__.py
+    - GemfileInfoExtractor.py
+    - GruntfileInfoExtractor.py
+    - Utilities.py
+  - Constants.py
+  - __init__.py
+  - info_extraction:
+    - Information.py
+    - InfoScope.py
+    - __init__.py
+    - InfoExtractor.py
+    - Utilities.py
+    - Info.py
+  - coala_quickstart.py
+  - green_mode:
+    - QuickstartBear.py
+    - green_mode.py
+    - bear_settings.yaml
+    - filename_operations.py
+  - interaction:
+    - __init__.py
+    - Logo.py
+  - Strings.py
+  - generation:
+    - __init__.py
+    - SettingsClass.py
+    - InfoMapping.py
+    - InfoCollector.py
+    - Bears.py
+    - Settings.py
+    - Utilities.py
+    - SettingsFilling.py
+    - Project.py
+    - FileGlobs.py
+- coala-quickstart
+- LICENSE
+- requirements.txt
+- .ci:
+  - deps.sh
+  - appveyor.yml
+  - run_with_env.cmd
+- test-requirements.txt
+- .moban.yaml
+- tests:
+  - info_extractors:
+    - UtilitiesTest.py
+    - GemfileInfoExtractorTest.py
+    - GruntfileInfoExtractorTest.py
+    - PackageJSONInfoExtractorTest.py
+    - EditorconfigInfoExtractorTest.py
+  - __init__.py
+  - info_extraction:
+    - __init__.py
+    - InfoTest.py
+    - InfoExtractorTest.py
+    - InfoScopeTest.py
+  - TestUtilities.py
+  - test_bears:
+    - BearB.py
+    - SmellCapabilityBear.py
+    - AnotherLinterBear.py
+    - AllKindsOfSettingsBaseBear.py
+    - LanguageSettingBear.py
+    - AllKindsOfSettingsDependentDecoratedBear.py
+    - BearC.py
+    - __init__.py
+    - SpaceConsistencyTestBear.py
+    - AllKindsOfSettingsDependentBear.py
+    - DependentBear.py
+    - AllKindsOfSettingsBaseDecoratedBear.py
+    - NonOptionalSettingBear.py
+    - SomeLinterBear.py
+    - BearA.py
+    - YetAnotherLinterBear.py
+  - interaction:
+    - __init__.py
+    - Logo.py
+  - generation:
+    - UtilitiesTest.py
+    - file_globs_gitignore_testfiles:
+      - .coafile
+      - globexp.py
+      - tests:
+        - run.c
+      - upload.c
+      - ignore.c
+    - InfoCollectorTest.py
+    - bears_ci_testfiles:
+      - src.html
+    - SettingsTest.py
+    - file_globs_ci_testfiles:
+      - ignore_dir:
+        - src.js
+        - src.c
+      - root.c
+    - SettingsClassTest.py
+    - __init__.py
+    - file_globs_testfiles:
+      - ignore_dir:
+        - src.js
+        - src.c
+      - root.c
+    - Bears.py
+    - SettingsFillingTest.py
+    - Project.py
+    - FileGlobs.py
+- MANIFEST.in
+- .editorconfig
+- ISSUE_TEMPLATE.md
+- setup.py
+- .gitignore
+- circle.yml
+- setup.cfg
+- .rultor.yml
+- README.rst
+- .git: []
+- .travis.yml
