@@ -14,7 +14,6 @@ from coala_quickstart.coala_quickstart import _get_arg_parser
 from coala_quickstart.Constants import (
     IMPORTANT_BEAR_LIST, ALL_CAPABILITIES)
 from coala_quickstart.generation.InfoCollector import collect_info
-from coalib.collecting.Collectors import get_all_bears
 from tests.TestUtilities import bear_test_module, generate_files
 
 
@@ -133,20 +132,37 @@ class TestBears(unittest.TestCase):
 
     def test_filter_relevant_bears_green_mode(self):
         from argparse import Namespace
-        invalid_bears = ['DocGrammarBear', 'DocumentationStyleBear']
+        from coalib.settings.ConfigurationGathering import (
+            get_filtered_bears)
         self.arg_parser.parse_args = unittest.mock.MagicMock(
             return_value=Namespace(green_mode=True))
         res = filter_relevant_bears([('Python', 70), ('C', 20)],
                                     self.printer,
                                     self.arg_parser,
                                     {})
-        for lang in res:
-            result = list(filter(lambda x: next((
-                False for bear in invalid_bears if bear in str(x)), True),
-                                 list(res[lang])))
-            to_compare = list(filter(lambda x: lang in x.LANGUAGES,
-                                     get_all_bears()))
-            self.assertCountEqual(result, to_compare)
+        all_bears = get_filtered_bears(['Python', 'C'])[0]
+        bears = all_bears['all']
+        bears += all_bears['all.python']
+        important_bears = []
+
+        for bear_set in list(IMPORTANT_BEAR_LIST.values()):
+            for bear in bear_set:
+                important_bears.append(bear)
+
+        bear_objs = []
+        for bear in bears:
+            if bear.__name__ in important_bears:
+                bear_objs.append(bear)
+
+        bear_obj_dict = dict()
+        for key in ['Python', 'C', 'All']:
+            bear_obj_dict[key] = set()
+            for bear in IMPORTANT_BEAR_LIST[key]:
+                bear_obj_dict[key].update([x for x in bear_objs if (
+                    x.__name__ == bear)])
+
+        self.maxDiff = None
+        self.assertEqual(res, bear_obj_dict)
 
     def test_filter_relevant_bears_with_extracted_info(self):
         # results without extracted information

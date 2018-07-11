@@ -10,6 +10,9 @@ IMPORTANT_BEAR_LIST = {
     'Java': {'JavaPMD', 'CheckstyleBear'},
     'Python': {'PycodestyleBear'}}
 
+# This includes the bears from IMPORTANT_BEAR_LIST
+GREEN_MODE_COMPATIBLE_BEAR_LIST = {}
+
 ALL_CAPABILITIES = {
     'Code Simplification',
     'Commented Code',

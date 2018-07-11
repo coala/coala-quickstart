@@ -1,4 +1,5 @@
 import inspect
+import itertools
 import os
 from collections import defaultdict
 import re
@@ -187,3 +188,51 @@ def get_language_from_hashbang(hashbang):
             # For eg: #!bin/bash
             hashbang_element = hashbang_contents[0].split('/')
             return (hashbang_element[len(hashbang_element)-1])
+
+
+def concatenate(dict1, dict2):
+    """
+    Concatenates 2 dicts of the type:
+    eg.
+
+    dict1:
+    {'key1': {value1, value2},
+     'key2': {value3, value4}}
+
+    dict2:
+    {'key2': {value4, value5},
+     'key3': {value6, value7}}
+
+    output:
+    {'key1': {value1, value2},
+     'key2': {value3, value4, value5},
+     'key3': {value6, value7}}
+
+    :return:
+        The concatenated dict.
+    """
+    for key in dict1:
+        if key in dict2:
+            dict1[key] = dict1[key].union(dict2[key])
+
+    for key in dict2:
+        if key not in dict1:
+            dict1[key] = dict2[key]
+
+    return dict1
+
+
+def peek(iterable):
+    """
+    Checks if an iterable is empty.
+    :param iterable:
+        The iterable python object.
+    :return:
+        None if an iterable is empty or else first item
+        of the iterable object and the remaining iterator.
+    """
+    try:
+        first = next(iterable)
+    except StopIteration:
+        return None
+    return first, itertools.chain([first], iterable)

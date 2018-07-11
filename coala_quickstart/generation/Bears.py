@@ -8,6 +8,7 @@ from coala_quickstart.Constants import (
     IMPORTANT_BEAR_LIST, ALL_CAPABILITIES, DEFAULT_CAPABILTIES)
 from coala_quickstart.Strings import BEAR_HELP
 from coala_quickstart.generation.SettingsFilling import is_autofill_possible
+from coala_quickstart.generation.Utilities import concatenate
 from coalib.bearlib.abstractions.LinterClass import LinterClass
 from coalib.settings.ConfigurationGathering import get_filtered_bears
 from coalib.misc.DictUtilities import inverse_dicts
@@ -57,23 +58,32 @@ def filter_relevant_bears(used_languages,
     candidate_bears = copy.copy(bears_by_lang)
     to_propose_bears = {}
 
-    if args.green_mode:
-        return candidate_bears
+    REQUIRED_BEAR_LIST = IMPORTANT_BEAR_LIST
 
-    # Initialize selected_bears with IMPORTANT_BEAR_LIST
+    if args.green_mode:
+        from coala_quickstart.Constants import (
+            GREEN_MODE_COMPATIBLE_BEAR_LIST)
+        REQUIRED_BEAR_LIST = concatenate(IMPORTANT_BEAR_LIST,
+                                         GREEN_MODE_COMPATIBLE_BEAR_LIST)
+
+    # Initialize selected_bears with REQUIRED_BEAR_LIST
     for lang, lang_bears in candidate_bears.items():
-        if lang_bears and lang in IMPORTANT_BEAR_LIST:
+        if lang_bears and lang in REQUIRED_BEAR_LIST:
             selected_bears[lang] = set()
             for bear in lang_bears:
-                if bear.__name__ in IMPORTANT_BEAR_LIST[lang]:
+                if bear.__name__ in REQUIRED_BEAR_LIST[lang]:
                     selected_bears[lang].add(bear)
-        if lang_bears and lang not in IMPORTANT_BEAR_LIST:
+        if lang_bears and lang not in REQUIRED_BEAR_LIST and (
+                not args.green_mode):
             selected_bears[lang] = set(lang_bears)
 
         candidate_bears[lang] = set(
             [bear for bear in lang_bears
              if lang in selected_bears and
              bear not in selected_bears[lang]])
+
+    if args.green_mode:
+        return selected_bears
 
     if not args.no_filter_by_capabilities:
         # Ask user for capablities
