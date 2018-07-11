@@ -1,0 +1,113 @@
+# The bears covered in this yaml file are listed in
+# Constants.py, IMPORTANT_BEAR_LIST and
+# GREEN_MODE_COMPATIBLE_BEAR_LIST.
+
+type4:
+  # These type of settings refer to the location of an already
+  # existing config file for the project for that particular
+  # linter used by the bear.
+  CMakeLintBear:
+    cmakelint_config: ''
+  JSHintBear:
+    jshint_config: ''
+
+type3:
+  # These kind of bear settings take some finite discrete set of
+  # values. Any other value passed is incorrect for these settings.
+  FilenameBear:
+    file_naming_convention: ['auto', 'camel', 'kebab', 'pascal',
+                             'snake', 'space']
+    # NOTE: Setting it to auto guesses the correct convention
+    #       by the bear itself. Defaults to snake if the correct
+    #       convention cannot be guessed.
+  GNUIndentBear:
+  # discarding `indent_cli_options` as all options already handled by
+  # other bear settings.
+  CPDBear:
+    language: ['C#', 'C++'] # As currently IMPORTANT_BEAR_LIST
+    # and GREEN_MODE_COMPATIBLE_BEAR_LIST use it for only these 2 languages.
+  CPPCheckBear:
+    enable: ['all', 'warning', 'style', 'performance',
+             'portability', 'information', 'unusedFunction',
+             'missingInclude']
+  PycodestyleBear:
+    pycodestyle_ignore: ['D100', 'D101', 'D102', 'D103', 'D104',
+                        'D105','D106', 'D107',
+                        'D200', 'D201', 'D202', 'D203', 'D204',
+                        'D205', 'D206', 'D207', 'D208', 'D209',
+                        'D210', 'D211', 'D212', 'D213', 'D214',
+                        'D215',
+                        'D300', 'D301', 'D302',
+                        'D400', 'D401', 'D402', 'D403', 'D404',
+                        'D405', 'D406', 'D407', 'D408', 'D409',
+                        'D410', 'D411', 'D412', 'D413', 'D414']
+    pycodestyle_select:  ['D100', 'D101', 'D102', 'D103', 'D104',
+                          'D105','D106', 'D107',
+                          'D200', 'D201', 'D202', 'D203', 'D204',
+                          'D205', 'D206', 'D207', 'D208', 'D209',
+                          'D210', 'D211', 'D212', 'D213', 'D214',
+                          'D215',
+                          'D300', 'D301', 'D302',
+                          'D400', 'D401', 'D402', 'D403', 'D404',
+                          'D405', 'D406', 'D407', 'D408', 'D409',
+                          'D410', 'D411', 'D412', 'D413', 'D414']
+  JSHintBear:
+    es_version: [3, 5, 6]
+    allow_latedef: [True, False, 'nofunc']
+    allow_unused_variables: [True, False, 'vars', 'strict']
+    allow_variable_shadowing: [True, False, 'inner', 'outer']
+    javascript_strictness: [True, False, 'implied', global]
+
+  # The following settings are Type 2 but migrated to Type 3 because
+  # of probable values and lack of efficient algorithms to deduce their
+  # appropriate values from the project.
+
+  GNUIndentBear:
+    case_indentation: [0, 2, 4, 8, 1, 3, 5, 6]
+    declaration_indent: [0, 2, 4, 8, 1, 3, 5, 6]
+    brace_indent: [2, 4, 8, 1, 3, 5, 6, 0]
+    indent_size: [4, 2, 8, 1, 3, 5, 6, 0]
+  SpaceConsistencyBear:
+    indent_size: [4, 2, 8, 1, 3, 5, 6, 0]
+
+type2:
+  # These settings can take a huge set of values (eg. all the range of
+  # an integer or even infinite set of values). The QuickstartBear tries
+  # to guess the values of these settings from the process since it is
+  # not viable to run coala these many times by green mode.
+  FilenameBear:
+    filename_prefix: ''
+    filename_suffix: ''
+  LineCountBear:
+    min_lines_per_file: 1
+    max_lines_per_file: 1000
+  GNUIndentBear:
+    max_line_length: 79
+  PycodestyleBear:
+    max_line_length: 79
+
+how_to_guess_these:
+  # Some type2 settings that are yet not guessed by QuickstartBear. The
+  # bears run with default values for these settings.
+  ClangComplexityBear:
+    cyclomatic_complexity: 8
+  CPDBear:
+    minimum_tokens: 20
+  CPPCleanBear:
+    include_paths: ''
+  JSHintBear:
+    cyclomatic_complexity: None
+    max_depth: None
+
+too_difficult_to_guess_by_file_dict_parsing:
+  # These type2 settings can be guessed by QuickstartBear but a large amount
+  # of code may be required for just guessing the value of one bear setting.
+  # Looking at the amount of bears and bear settings, it is not viable
+  # to prioritize the guessing of values for them.
+  JSHintBear:
+    max_parameters: None
+    max_statements: None
+  InvalidLinkBear:
+    link_ignore_regex: '([.\/]example\.com|\{|\$)'
+    link_ignore_list: ''
+    network_timeout: 15
