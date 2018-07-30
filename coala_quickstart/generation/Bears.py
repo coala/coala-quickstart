@@ -6,7 +6,7 @@ from collections import defaultdict
 
 from coala_quickstart.Constants import (
     IMPORTANT_BEAR_LIST, ALL_CAPABILITIES, DEFAULT_CAPABILTIES)
-from coala_quickstart.Strings import BEAR_HELP
+from coala_quickstart.Strings import PRINT_BEARS, BEAR_HELP
 from coala_quickstart.generation.SettingsFilling import is_autofill_possible
 from coalib.bearlib.abstractions.LinterClass import LinterClass
 from coalib.settings.ConfigurationGathering import get_filtered_bears
@@ -201,40 +201,52 @@ def get_non_optional_settings_bears(bears):
     return non_optional_settings
 
 
-def remove_unusable_bears(bears, unusable_bears):
+def filter_unusable_bears(bears, unusable_bears):
     """
-    From the bears dict, filter the bears appearing in unusable_bears.
+    From the bears dict, filter the bears appearing in unusable_bears
+    and save them under “unusable” key for printing later.
 
     :param bears:
         A dict with language name as key and bear classes as value.
     :param unusable_bears:
         A collection of Bear classes.
     """
-    for language, language_bears in bears.items():
+    for language, language_bears in bears['usable'].items():
         for bear in tuple(language_bears):
             if bear in unusable_bears:
-                bears[language].remove(bear)
+                bears['usable'][language].remove(bear)
+                bears['unusable'][language] = bears['unusable'].get(
+                    language, ()) + (bear, )
 
 
-def print_relevant_bears(printer, relevant_bears, label='relevant'):
+def print_relevant_bears(printer, relevant_bears):
     """
-    Prints the relevant bears in sections separated by language.
+    Prints both the usable and unusable, relevant bears
+    in sections indexed by language.
 
     :param printer:
         A ``ConsolePrinter`` object used for console interactions.
     :param relevant_bears:
-        A dict with language name as key and bear classes as value.
+        An ``OrderedDict`` indexed by “usable” and “unusable” bears stored in
+        dictionaries that use language as key and bear classes as value.
     """
-    if label == 'relevant':
-        printer.print(BEAR_HELP)
+    printer.print(BEAR_HELP)
 
-    printer.print('\nBased on the languages used in project the following '
-                  'bears have been identified to be %s:' % label)
-    for language in relevant_bears:
-        printer.print('    [' + language + ']', color='green')
-        for bear in relevant_bears[language]:
-            printer.print('    ' + bear.name, color='cyan')
-        printer.print('')
+    nonempty_label_bears = [
+        label for label in relevant_bears if len(relevant_bears[label]) > 0]
+
+    if not nonempty_label_bears:
+        printer.print('No relevant bears were found.')
+    else:
+        for label_bears in nonempty_label_bears:
+            printer.print(PRINT_BEARS[label_bears]['msg'])
+            for language in relevant_bears[label_bears]:
+                printer.print('    [' + language + ']',
+                              color=PRINT_BEARS[label_bears]['colors'][0])
+                for bear in relevant_bears[label_bears][language]:
+                    printer.print('    ' + bear.name,
+                                  color=PRINT_BEARS[label_bears]['colors'][1])
+                printer.print('')
 
 
 def generate_requirements_map(bears):

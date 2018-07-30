@@ -54,3 +54,26 @@ JavaScript are supported out-of-the-box.
 
 You can see all of them here: {}
 """.format(BEAR_DOCS_URL)
+
+PRINT_UNUSABLE = """
+The following bears have been dropped because '-C'/'--ci' (non
+interactive mode) option has been selected. Remove the option or
+check '--allow-incomplete-sections' option for more information
+on how to include them:
+"""
+
+PRINT_USABLE = """
+Based on the languages used in project the following bears have been
+identified as usable:
+"""
+
+PRINT_BEARS = {
+    'unusable': {
+        'msg': PRINT_UNUSABLE,
+        'colors': ('green', 'red')
+    },
+    'usable': {
+        'msg': PRINT_USABLE,
+        'colors': ('green', 'cyan')
+    }
+}
