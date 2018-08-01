@@ -236,3 +236,72 @@ def peek(iterable):
     except StopIteration:
         return None
     return first, itertools.chain([first], iterable)
+
+
+def contained_in(smaller, bigger):
+    """
+    Takes in two SourceRange objects and checks whether
+    the first one lies inside the other one.
+    :param smaller:
+        The SourceRange object that needs to be checked whether
+        it is inside the other one.
+    :param bigger:
+        The SourceRange object that needs to be checked whether
+        it contains the other one.
+    :return:
+        True if smaller is inside the bigger else false.
+    """
+    smaller_file = smaller.start.file
+    bigger_file = bigger.start.file
+
+    smaller_start_line = smaller.start.line
+    smaller_start_column = smaller.start.column
+    smaller_end_line = smaller.end.line
+    smaller_end_column = smaller.end.column
+
+    bigger_start_line = bigger.start.line
+    bigger_start_column = bigger.start.column
+    bigger_end_line = bigger.end.line
+    bigger_end_column = bigger.end.column
+
+    if None in [smaller_start_line, smaller_start_column,
+                smaller_end_line, smaller_end_column,
+                bigger_start_line, bigger_start_column,
+                bigger_end_line, bigger_end_column]:
+        return False
+
+    if not smaller_file == bigger_file:
+        return False
+
+    if smaller_start_line < bigger_start_line:
+        return False
+
+    if smaller_end_line > bigger_end_line:
+        return False
+
+    if smaller_start_line > bigger_start_line and (
+            smaller_end_line < bigger_end_line):
+        return True
+
+    same_start_line = True if (
+        smaller_start_line == bigger_start_line) else False
+
+    same_end_line = True if (
+        smaller_end_line == bigger_end_line) else False
+
+    if same_start_line and same_end_line:
+        if smaller_start_column < bigger_start_column:
+            return False
+        if smaller_end_column > bigger_end_column:
+            return False
+        return True
+
+    if same_start_line:
+        if smaller_start_column < bigger_start_column:
+            return False
+        return True
+
+    assert same_end_line
+    if smaller_end_column > bigger_end_column:
+        return False
+    return True
