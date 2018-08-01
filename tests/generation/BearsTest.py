@@ -12,7 +12,8 @@ from coala_quickstart.generation.Bears import (
 from coala_quickstart.coala_quickstart import main
 from coala_quickstart.coala_quickstart import _get_arg_parser
 from coala_quickstart.Constants import (
-    IMPORTANT_BEAR_LIST, ALL_CAPABILITIES)
+    IMPORTANT_BEAR_LIST, ALL_CAPABILITIES,
+    GREEN_MODE_INCOMPATIBLE_BEAR_LIST)
 from coala_quickstart.generation.InfoCollector import collect_info
 from tests.TestUtilities import bear_test_module, generate_files
 
@@ -158,8 +159,9 @@ class TestBears(unittest.TestCase):
         for key in ['Python', 'C', 'All']:
             bear_obj_dict[key] = set()
             for bear in IMPORTANT_BEAR_LIST[key]:
-                bear_obj_dict[key].update([x for x in bear_objs if (
-                    x.__name__ == bear)])
+                if bear not in GREEN_MODE_INCOMPATIBLE_BEAR_LIST:
+                    bear_obj_dict[key].update([x for x in bear_objs if (
+                        x.__name__ == bear)])
 
         self.maxDiff = None
         self.assertEqual(res, bear_obj_dict)

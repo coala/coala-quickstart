@@ -62,9 +62,17 @@ def filter_relevant_bears(used_languages,
 
     if args.green_mode:
         from coala_quickstart.Constants import (
-            GREEN_MODE_COMPATIBLE_BEAR_LIST)
+            GREEN_MODE_COMPATIBLE_BEAR_LIST,
+            GREEN_MODE_INCOMPATIBLE_BEAR_LIST)
         REQUIRED_BEAR_LIST = concatenate(IMPORTANT_BEAR_LIST,
                                          GREEN_MODE_COMPATIBLE_BEAR_LIST)
+        NEW_REQUIRED_BEAR_LIST = {}
+        for lang in REQUIRED_BEAR_LIST:
+            NEW_REQUIRED_BEAR_LIST[lang] = set()
+            for bear in REQUIRED_BEAR_LIST[lang]:
+                if bear not in GREEN_MODE_INCOMPATIBLE_BEAR_LIST:
+                    NEW_REQUIRED_BEAR_LIST[lang].add(bear)
+        REQUIRED_BEAR_LIST = NEW_REQUIRED_BEAR_LIST
 
     # Initialize selected_bears with REQUIRED_BEAR_LIST
     for lang, lang_bears in candidate_bears.items():
