@@ -52,11 +52,9 @@ def generate_ignore_field(project_dir,
         A comma-separated string containing the globs to ignore.
     """
 
-    
-
     ignores = []
     for glob in ignore_globs:
-         ignores.append(os.path.relpath(glob, project_dir))
+        ignores.append(os.path.relpath(glob, project_dir))
 
     return ', '.join(ignores)
 
