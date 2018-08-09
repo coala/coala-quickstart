@@ -6,12 +6,18 @@ from copy import deepcopy
 from pathlib import Path
 
 from coala_quickstart.generation.Utilities import (
-    split_by_language, peek, contained_in)
+    split_by_language, peek, contained_in,
+    get_extensions)
+from coala_quickstart.generation.Settings import (
+    generate_ignore_field)
 from coala_quickstart.generation.SettingsClass import (
     SettingTypes)
+from coala_quickstart.green_mode.file_aggregator import (
+    aggregate_files)
 from coala_quickstart.green_mode.QuickstartBear import (
     QuickstartBear)
 from coalib.bears.GlobalBear import GlobalBear
+from coalib.output.ConfWriter import ConfWriter
 from coalib.processes.Processing import (
     get_file_dict, yield_ignore_ranges)
 from coalib.settings.Section import Section
@@ -442,13 +448,12 @@ def run_test_on_each_bear(bear, file_dict, file_names, lang, kwargs,
     if type_of_setting == 'non-op':
         printer.print('Finding suitable values to necessary '
                       'settings for ' + bear.__name__ +
-                      ' based on your project ...',
-                      color='green')
+                      ' based on your project ...')
     else:
         printer.print('Finding suitable values to all settings '
                       'for ' + bear.__name__ +
                       ' based on your project ...',
-                      color='yellow'
+                      color='green'
                       )
     if issubclass(bear, GlobalBear):
         file_results = global_bear_test(bear, file_dict, kwargs,
@@ -530,8 +535,171 @@ def bear_test_fun(bears, bear_settings_obj, file_dict, ignore_ranges,
     return final_non_op_results, final_unified_results
 
 
-def green_mode(project_dir, ignore_globs, bears, bear_settings_obj,
-               op_args_limit, value_to_op_args_limit, printer=None):
+def generate_data_struct_for_sections(results):
+    """
+    Interprets the results from the method `bear_test_fun()`
+    which are inturn utilized by the method `generate_green_mode_sections()`
+    to create sections for the coala config file.
+    :param results:
+        Individual values of the tuples returned by `bear_test_fun()`.
+    """
+    setting_vals = []
+    for bear_dict in results:
+        if bear_dict is None:
+            continue
+        for bear in bear_dict:
+            for dict_ in bear_dict[bear]:
+                setting_vals.append(list(dict_.keys()))
+
+    setting_vals_without_duplicates = []
+    for elem in setting_vals:
+        if elem not in setting_vals_without_duplicates:
+            setting_vals_without_duplicates.append(elem)
+    setting_vals = setting_vals_without_duplicates
+
+    per_bear_settings = {}
+    for bear_dict in results:
+
+        if bear_dict is None:
+            continue
+
+        data_struct = []
+        for collection_of_settings in setting_vals:
+            data_struct.append((collection_of_settings, []))
+
+        for bear in bear_dict:
+            for dict_ in bear_dict[bear]:
+                for index, collection_of_settings in enumerate(setting_vals):
+                    if list(dict_.keys()) == collection_of_settings:
+                        # data_struct[collection_of_settings].append(dict_)
+                        assert data_struct[index][0], collection_of_settings
+                        data_struct[index][1].append(dict_)
+        per_bear_settings[list(bear_dict.keys())[0]] = data_struct
+
+    bear_data_struct = {}
+    for bear in per_bear_settings:
+        section_values = []
+        for (setting_combs, list_of_vals) in per_bear_settings[bear]:
+            dicts_with_settings = []
+            for dict_ in list_of_vals:
+                new_dict = deepcopy(dict_)
+                new_dict.pop('filename')
+                if new_dict not in dicts_with_settings:
+                    dicts_with_settings.append(new_dict)
+            dicts_with_settings_filename = deepcopy(dicts_with_settings)
+            for item in dicts_with_settings_filename:
+                item['filename'] = []
+            for dict_ in list_of_vals:
+                new_dict = deepcopy(dict_)
+                new_dict.pop('filename')
+                for id, to_append_dict in enumerate(dicts_with_settings):
+                    if to_append_dict == new_dict:
+                        dicts_with_settings_filename[id]['filename'].append(
+                            dict_['filename'])
+            section_values.append(dicts_with_settings_filename)
+        bear_data_struct[bear] = section_values
+
+    return bear_data_struct
+
+
+def write_sections(self, sections):
+    """
+    This method is a re-definition of the
+    `coalib.output.ConfWriter.write_sections` method. The difference
+    it creates is that instead of accepting a list of sections it
+    accepts a dict of sections with list of sections as the value
+    to each key.
+    :param sections:
+        A dict with value as a list of sections to each key.
+    """
+    # Always write the section 'all' first.
+    if not sections['all'] == []:
+        self.write_section(sections['all'][0])
+        all_section = sections['all'][0]
+        ignore_all = all_section['ignore']
+        del sections['all']
+    else:
+        all_section = ''
+        ignore_all = ''
+
+    for section in sections:
+        for individual_section in sections[section]:
+            individual_section.defaults = all_section
+            if not ignore_all == '':
+                individual_section['ignore'] = str(
+                    ignore_all) + ', ' + str(individual_section['ignore'])
+            self.write_section(individual_section)
+
+
+def generate_green_mode_sections(data, project_dir, project_files,
+                                 ignore_globs, printer=None, suffix=''):
+    """
+    Generates the section objects for the green_mode.
+    :param data:
+        This is the data structure generated from the method
+        generate_data_struct_for_sections().
+    :param project_dir:
+        The path of the project directory.
+    :param project_files:
+        List of paths to only the files inside the project directory.
+    :param ignore_globs:
+        The globs of files to ignore.
+    :param printer:
+        The ConsolePrinter object.
+    :param suffix:
+        A suffix that can be added to the `.coafile.green`.
+    """
+    all_sections = {'all': [], }
+    lang_files = split_by_language(project_files)
+    extset = get_extensions(project_files)
+    ignored_files = generate_ignore_field(project_dir, lang_files.keys(),
+                                          extset, ignore_globs)
+    if ignored_files:
+        section_all = Section('all')
+        section_all['ignore'] = ignored_files
+        all_sections['all'].append(section_all)
+
+    for bear in data:
+        num = 0
+        bear_sections = []
+        for setting_combs in data[bear]:
+            if len(setting_combs) == 0:
+                continue
+            for dict_ in setting_combs:
+                num = num + 1
+                section = Section('all.'+bear.__name__+str(num), None)
+                for key_ in dict_:
+                    if key_ == 'filename':
+                        file_list_sec = dict_[key_]
+                        file_list_sec, ignore_list = aggregate_files(
+                            file_list_sec, project_dir)
+                        dict_[key_] = file_list_sec
+                        section['ignore'] = ', '.join(x for x in ignore_list)
+                        section['files'] = ', '.join(x for x in dict_[key_])
+                    else:
+                        section[key_] = str(dict_[key_])
+                    section['bears'] = bear.__name__
+                bear_sections.append(section)
+        # Remove sections for the same bear who have common files i.e. more
+        # than one setting was found to be green.
+        file_list = []
+        new_bear_sections = []
+        for index, section in enumerate(bear_sections):
+            if not section.contents['files'] in file_list:
+                file_list.append(section.contents['files'])
+                new_bear_sections.append(section)
+        all_sections[bear.__name__] = new_bear_sections
+
+    coafile = os.path.join(project_dir, '.coafile.green'+suffix)
+    writer = ConfWriter(coafile)
+    write_sections(writer, all_sections)
+    writer.close()
+    printer.print("'" + coafile + "' successfully generated.", color='green')
+
+
+def green_mode(project_dir, project_files, ignore_globs, bears,
+               bear_settings_obj, op_args_limit, value_to_op_args_limit,
+               printer=None):
     """
     Runs the green mode of coala-quickstart. Generates
     '.project_data.yaml' which contains the files and directory structure
@@ -544,6 +712,8 @@ def green_mode(project_dir, ignore_globs, bears, bear_settings_obj,
     file for the project.
     :param project_dir:
         The project directory.
+    :param project_files:
+        Files in the project.
     :param ignore_globs:
         The globs of the files to ignore from the linting process.
     :param bears:
@@ -557,6 +727,8 @@ def green_mode(project_dir, ignore_globs, bears, bear_settings_obj,
     :param value_to_op_args_limit:
         The maximum number of values to run the bear again and again for
         a optioanl setting.
+    :param printer:
+        The ConsolePrinter object.
     """
     from coala_quickstart.green_mode.filename_operations import (
         check_filename_prefix_postfix)
@@ -593,6 +765,20 @@ def green_mode(project_dir, ignore_globs, bears, bear_settings_obj,
         op_args_limit, value_to_op_args_limit, printer)
 
     # Call to create `.coafile` goes over here.
+    settings_non_op = generate_data_struct_for_sections(
+        final_non_op_results)
+    settings_unified = generate_data_struct_for_sections(
+        final_unified_results)
+
+    # Combine the settings for the sections due to the missed out bears in
+    # unified results due to the limitations on maximum number of optionanl
+    # arguments and the values to those arguments that can be supplied.
+    for bear in settings_non_op:
+        if bear not in settings_unified:
+            settings_unified[bear] = settings_non_op[bear]
+
+    generate_green_mode_sections(
+        settings_unified, project_dir, project_files, ignore_globs, printer)
 
     # Final Dump.
     dump_to_file(project_data, project_data_contents)

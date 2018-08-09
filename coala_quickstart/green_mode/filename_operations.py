@@ -55,7 +55,7 @@ class Trie:
             current_prefix = ''.join(prefix)+node.character
             to_delete = []
             for i in self.prefixes:
-                if i in current_prefix:
+                if i in current_prefix:  # pragma: no cover
                     to_delete.append(i)
             for i in to_delete:
                 self.prefixes.pop(i)

@@ -126,7 +126,7 @@ def main():
         args.non_interactive)
 
     used_languages = list(get_used_languages(project_files))
-    if not args.non_interactive:
+    if not args.non_interactive:  # pragma: no cover
         used_languages = ask_to_select_languages(used_languages, printer)
     print_used_languages(printer, used_languages, args.non_interactive)
 
@@ -139,7 +139,8 @@ def main():
         build_bear_settings(relevant_bears)
         bear_settings_obj = collect_bear_settings(relevant_bears)
         green_mode(
-            project_dir, ignore_globs, relevant_bears, bear_settings_obj,
+            project_dir, project_files, ignore_globs, relevant_bears,
+            bear_settings_obj,
             MAX_NUM_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE,
             MAX_NUM_OF_VALUES_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE,
             printer)

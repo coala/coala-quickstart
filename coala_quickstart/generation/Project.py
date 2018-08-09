@@ -84,7 +84,6 @@ def get_used_languages(file_paths):
 
 
 def ask_to_select_languages(languages, printer):
-    print(languages)
     only_languages = []
     percentages = []
     max_length = -1
@@ -106,8 +105,8 @@ def ask_to_select_languages(languages, printer):
         for i in range(num_spaces):
             spaces += ' '
         printer.print(
-            '    {}. {}{} {:>2}%'.format(
-                idx + 1, lang, spaces, int(percentages[idx])), color='green')
+            '             {}. {}{} {:>2}%'.format(
+                idx + 1, lang, spaces, int(percentages[idx])))
 
     selected_numbers = []
     try:
@@ -146,11 +145,11 @@ def print_used_languages(printer, results, non_interactive=True):
         Variable that defines whether quickstart is in non_interactive
         mode or not.
     """
-    if non_interactive:
+    if non_interactive:  # pragma: no cover
         printer.print(
             'The following languages have been automatically detected:\n')
     else:
-        printer.print(
+        printer.print(  # pragma: no cover
             'The following languages have been selected by you:\n')
     for lang, percent in results:
         formatted_line = '{:>25}: {:>2}%'.format(lang, int(percent))

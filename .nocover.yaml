@@ -44,3 +44,6 @@ nocover_regexes:
   - def get_gitignore_glob
   - def parse_gitignore_line
   - def get_language_from_hashbang
+  - def find_globs_from_files
+  - def green_mode
+  - def ask_to_select_languages

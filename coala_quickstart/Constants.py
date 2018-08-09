@@ -14,7 +14,7 @@ IMPORTANT_BEAR_LIST = {
 GREEN_MODE_COMPATIBLE_BEAR_LIST = {}
 
 # This takes precedence over the other two bear lists.
-GREEN_MODE_INCOMPATIBLE_BEAR_LIST = {'FilenameBear'}
+GREEN_MODE_INCOMPATIBLE_BEAR_LIST = {'FilenameBear', 'InvalidLinkBear'}
 
 ALL_CAPABILITIES = {
     'Code Simplification',
