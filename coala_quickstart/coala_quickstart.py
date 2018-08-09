@@ -12,7 +12,8 @@ from coala_quickstart import __version__
 from coala_quickstart.interaction.Logo import print_welcome_message
 from coala_quickstart.generation.InfoCollector import collect_info
 from coala_quickstart.generation.Project import (
-    valid_path, get_used_languages, print_used_languages)
+    valid_path, get_used_languages, print_used_languages,
+    ask_to_select_languages)
 from coala_quickstart.generation.FileGlobs import get_project_files
 from coala_quickstart.Strings import PROJECT_DIR_HELP
 from coala_quickstart.generation.Bears import (
@@ -24,7 +25,8 @@ from coala_quickstart.generation.Bears import (
 from coala_quickstart.generation.Settings import (
     generate_settings, write_coafile)
 from coala_quickstart.generation.SettingsClass import (
-    collect_bear_settings)
+    collect_bear_settings, build_bear_settings)
+from coala_quickstart.green_mode.green_mode import green_mode
 
 
 def _get_arg_parser():
@@ -61,13 +63,26 @@ coala-quickstart automatically creates a .coafile for use by coala.
     arg_parser.add_argument(
         '-g', '--green-mode', const=True, action='store_const',
         help='Produce "green" config files for you project. Green config files'
-             'don\'t generate any error in the project and match the coala'
-             'configuration as closely as possible to your project.')
+             ' don\'t generate any error in the project and match the coala'
+             ' configuration as closely as possible to your project.')
+
+    arg_parser.add_argument(
+        '--max-args', nargs='?', type=int,
+        help='Maximum number of optional settings allowed to be checked'
+             ' by green_mode for each bear.')
+
+    arg_parser.add_argument(
+        '--max-values', nargs='?', type=int,
+        help='Maximum number of values to optional settings allowed to be'
+             ' checked by green_mode for each bear.')
 
     return arg_parser
 
 
 def main():
+    MAX_NUM_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE = 5
+    MAX_NUM_OF_VALUES_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE = 5
+
     arg_parser = _get_arg_parser()
     args = arg_parser.parse_args()
 
@@ -79,9 +94,18 @@ def main():
     project_dir = os.getcwd()
 
     if args.green_mode:
-        args.non_interactive = None
         args.no_filter_by_capabilities = None
         args.incomplete_sections = None
+        if args.max_args:
+            MAX_NUM_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE = args.max_args
+        if args.max_values:
+            MAX_NUM_OF_VALUES_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE = (
+                args.max_values)
+
+    if not args.green_mode and (args.max_args or args.max_values):
+        logging.warning(' --max-args and --max-values can be used '
+                        'only with --green-mode. The arguments will '
+                        'be ignored.')
 
     if not args.non_interactive and not args.green_mode:
         fpc = FilePathCompleter()
@@ -102,7 +126,9 @@ def main():
         args.non_interactive)
 
     used_languages = list(get_used_languages(project_files))
-    print_used_languages(printer, used_languages)
+    if not args.non_interactive:  # pragma: no cover
+        used_languages = ask_to_select_languages(used_languages, printer)
+    print_used_languages(printer, used_languages, args.non_interactive)
 
     extracted_information = collect_info(project_dir)
 
@@ -110,7 +136,15 @@ def main():
         used_languages, printer, arg_parser, extracted_information)
 
     if args.green_mode:
-        collect_bear_settings(relevant_bears)
+        build_bear_settings(relevant_bears)
+        bear_settings_obj = collect_bear_settings(relevant_bears)
+        green_mode(
+            project_dir, project_files, ignore_globs, relevant_bears,
+            bear_settings_obj,
+            MAX_NUM_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE,
+            MAX_NUM_OF_VALUES_OF_OPTIONAL_ARGS_ALLOWED_FOR_GREEN_MODE,
+            printer)
+        exit()
 
     print_relevant_bears(printer, relevant_bears)
 

@@ -354,3 +354,8 @@ def collect_bear_settings(bears):
         for bear in bears[language]:
             bear_settings_obj.append(BearSettings(bear))
     return bear_settings_obj
+
+
+def build_bear_settings(bears):
+    pass
+    # TODO build bear_settings.yaml on the fly when the bear args are annotated

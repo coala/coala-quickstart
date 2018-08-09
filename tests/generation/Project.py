@@ -1,9 +1,11 @@
 import unittest
 
 from pyprint.ConsolePrinter import ConsolePrinter
-from coala_utils.ContextManagers import retrieve_stdout
+from coala_utils.ContextManagers import (
+    retrieve_stdout, simulate_console_inputs)
 from coala_quickstart.generation.Project import (
-    get_used_languages, print_used_languages)
+    get_used_languages, print_used_languages,
+    ask_to_select_languages)
 
 
 class TestPopularLanguages(unittest.TestCase):
@@ -44,3 +46,22 @@ class TestPopularLanguages(unittest.TestCase):
         with retrieve_stdout() as custom_stdout:
             print_used_languages(self.printer, [])
             self.assertNotIn("following langauges", custom_stdout.getvalue())
+
+    def test_ask_to_select_languages(self):
+        languages = [('lang1', 50), ('lang2', 25), ('language3', 25)]
+        res = []
+        with simulate_console_inputs('1 2') as generator:
+            res = ask_to_select_languages(languages, self.printer)
+            self.assertEqual(generator.last_input, 0)
+        self.assertEqual(res, [('lang1', 50), ('lang2', 25)])
+
+        with simulate_console_inputs('6', '1') as generator:
+            res = ask_to_select_languages(languages, self.printer)
+            self.assertEqual(generator.last_input, 1)
+        self.assertEqual(res, [('lang1', 50)])
+
+        with simulate_console_inputs('\n') as generator:
+            res = ask_to_select_languages(languages, self.printer)
+            self.assertEqual(generator.last_input, 0)
+        self.assertEqual(res, [('lang1', 50), ('lang2', 25),
+                               ('language3', 25)])

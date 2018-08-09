@@ -1,0 +1,13 @@
+dir_structure:
+- .coafile
+- example_file_1
+- example_folder_1:
+  - example_file_2
+  - example_nested_folder_1:
+    - example_file_3
+  - example_nested_folder_2:
+    - example_file_4
+  - example_file_5
+- example_file_6
+
+

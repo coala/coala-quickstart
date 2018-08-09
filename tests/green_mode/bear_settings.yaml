@@ -1,0 +1,9 @@
+typeX:
+  GummyBear:
+    key: ''
+type2:
+  AllKindsOfSettingsBaseBear:
+    max_line_lengths: 1000
+type3:
+  AllKindsOfSettingsBaseBear:
+    no_line: [1, 2]
