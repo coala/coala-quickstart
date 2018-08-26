@@ -11,9 +11,6 @@ from coala_quickstart.green_mode.green_mode import (
     initialize_project_data,
     run_quickstartbear,
     )
-from coala_quickstart.green_mode.filename_operations import (
-    check_filename_prefix_postfix,
-    )
 
 PROJECT_DATA = '.project_data.yaml'
 
@@ -50,8 +47,6 @@ def green_mode(project_dir: str, ignore_globs, bears, bear_settings_obj,
         The maximum number of values to run the bear again and again for
         a optional setting.
     """
-    from coala_quickstart.green_mode.filename_operations import (
-        check_filename_prefix_postfix)
     ignore_globs.append(os.path.join(project_dir, '.git', '**'))
     project_data = project_dir + os.sep + PROJECT_DATA
 
@@ -68,8 +63,6 @@ def green_mode(project_dir: str, ignore_globs, bears, bear_settings_obj,
     # Operations before the running of QuickstartBear are done over here.
     # Eg. do operations on filenames over here.
     project_data_contents = get_yaml_contents(project_data)
-    project_data_contents = check_filename_prefix_postfix(
-        project_data_contents)
 
     # Run QuickstartBear
     (project_data_contents, ignore_ranges, file_dict,
