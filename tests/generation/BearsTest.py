@@ -198,7 +198,7 @@ class TestBears(unittest.TestCase):
         # Comparing both the scenarios
 
         # The following dict has list of bears that have their requirements
-        # caputred by `ProjectDependencyInfo` from the dependency files
+        # captured by `ProjectDependencyInfo` from the dependency files
         # but are not part of the `IMPORTANT_BEARS_LIST` in Constants.py
         additional_bears_by_lang = {
             "JavaScript": ["ESLintBear", "HappinessLintBear"],
