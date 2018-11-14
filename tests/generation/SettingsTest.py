@@ -77,7 +77,7 @@ class SettingsTest(unittest.TestCase):
 
     def test_allow_complete_section_mode(self):
         project_dir = "/repo"
-        project_files = ['/repo/hello.html']
+        project_files = ['/repo/hello.html', '/repo/readme.txt']
         ignore_globs = []
 
         used_languages = list(get_used_languages(project_files))
