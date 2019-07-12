@@ -3,6 +3,7 @@ import itertools
 import operator
 import os
 import sys
+from collections import OrderedDict
 from copy import deepcopy
 from pathlib import Path
 
@@ -11,35 +12,32 @@ from coala_quickstart.generation.Utilities import (
     get_all_args,
     get_extensions,
     get_yaml_contents,
-    peek,
     split_by_language,
-    )
-from coala_quickstart.generation.SettingsClass import (
-    SettingTypes,
-    )
+)
+
 from coala_quickstart.green_mode.file_aggregator import (
     aggregate_files,
-    )
+)
 from coala_quickstart.green_mode.Setting import (
     find_max_min_of_setting,
-    )
+)
 from coala_quickstart.generation.Settings import (
     generate_ignore_field,
-    )
+)
 from coala_quickstart.green_mode.QuickstartBear import (
     QuickstartBear,
-    )
+)
 from coala_utils.string_processing.Core import (
     escape,
-    )
+)
 from coalib.bears.GlobalBear import GlobalBear
 from coalib.output.ConfWriter import ConfWriter
+from coalib.output.ConfigConverter import ConfigConverter
 from coalib.processes.Processing import (
     get_file_dict,
     yield_ignore_ranges,
-    )
+)
 from coalib.settings.Section import Section
-
 
 settings_key = 'green_mode_infinite_value_settings'
 _CI_PYTEST_ACTIVE = os.environ.get('CI') and os.environ.get('PYTEST')
@@ -72,20 +70,20 @@ def initialize_project_data(dir, ignore_globs):
     """
     files_dirs = os.listdir(dir)
     # files_dirs holds names of both files and dirs.
-    dir_name = dir[dir.rfind(os.sep)+1:]
+    dir_name = dir[dir.rfind(os.sep) + 1:]
     final_data = []
 
     for i in files_dirs:
         to_continue = False
         for glob in ignore_globs:
-            if fnmatch.fnmatch(dir+i, glob):
+            if fnmatch.fnmatch(dir + i, glob):
                 to_continue = True
         if to_continue is True:
             continue
-        if os.path.isfile(dir+i):
+        if os.path.isfile(dir + i):
             final_data.append(i)
         else:
-            look_into_dir = dir+i+os.sep
+            look_into_dir = dir + i + os.sep
             data = initialize_project_data(look_into_dir,
                                            ignore_globs)
             final_data.append({i: data})
@@ -114,7 +112,7 @@ def generate_complete_filename_list(contents, project_dir):
             file_names_list.append(prefix + item)
         else:
             file_names_list += generate_complete_filename_list(
-                item[next(iter(item))], prefix+next(iter(item)))
+                item[next(iter(item))], prefix + next(iter(item)))
     return file_names_list
 
 
@@ -213,7 +211,7 @@ def get_setting_type(setting, bear, dir=None):
     """
     __location__ = os.path.realpath(
         os.path.join(os.getcwd(), os.path.dirname(__file__))) if (
-        dir is None) else dir
+            dir is None) else dir
     bear_settings = get_yaml_contents(os.path.join(
         __location__, 'bear_settings.yaml'))
     for type_setting in bear_settings:
@@ -481,8 +479,8 @@ def bear_test_fun(bears, bear_settings_obj, file_dict, ignore_ranges,
                 bear, file_dict, file_names, lang, non_op_kwargs,
                 ignore_ranges, 'non-op', printer,
                 jobs=jobs,
-                )
-            if len(op_kwargs) < op_args_limit and not(
+            )
+            if len(op_kwargs) < op_args_limit and not (
                     True in [len(value) > value_to_op_args_limit
                              for key, value in op_kwargs.items()]):
                 unified_kwargs = dict(non_op_kwargs)
@@ -492,7 +490,7 @@ def bear_test_fun(bears, bear_settings_obj, file_dict, ignore_ranges,
                     unified_kwargs, ignore_ranges, 'unified',
                     printer,
                     jobs=jobs,
-                    )
+                )
             else:
                 unified_file_results = None
             final_non_op_results.append(non_op_file_results)
@@ -597,8 +595,31 @@ def write_sections(self, sections):
             self.write_section(individual_section)
 
 
+def write_toml_sections(self, sections):
+    sections_dict = OrderedDict()
+
+    if not sections['all'] == []:
+        all_section = sections['all'][0]
+        ignore_all = all_section['ignore']
+        sections_dict[all_section.name] = all_section
+        del sections['all']
+    else:
+        all_section = ''
+        ignore_all = ''
+
+    for section in sections:
+        for individual_section in sections[section]:
+            individual_section.defaults = all_section
+            if not ignore_all == '':
+                individual_section['ignore'] = str(
+                    ignore_all) + ', ' + str(individual_section['ignore'])
+            sections_dict[individual_section.name] = individual_section
+    self.coafile_to_toml(sections_dict)
+
+
 def generate_green_mode_sections(data, project_dir, project_files,
-                                 ignore_globs, printer=None, suffix=''):
+                                 ignore_globs, in_toml, printer=None,
+                                 suffix=''):
     """
     Generates the section objects for the green_mode.
     :param data:
@@ -610,6 +631,8 @@ def generate_green_mode_sections(data, project_dir, project_files,
         List of paths to only the files inside the project directory.
     :param ignore_globs:
         The globs of files to ignore.
+    :param in_toml:
+        Decides whether to generate configuration files in toml or not
     :param printer:
         The ConsolePrinter object.
     :param suffix:
@@ -658,8 +681,16 @@ def generate_green_mode_sections(data, project_dir, project_files,
                 new_bear_sections.append(section)
         all_sections[bear.__name__] = new_bear_sections
 
-    coafile = os.path.join(project_dir, '.coafile.green' + suffix)
-    writer = ConfWriter(coafile)
-    write_sections(writer, all_sections)
-    writer.close()
-    printer.print("'" + coafile + "' successfully generated.", color='green')
+    if in_toml:
+        toml_file = os.path.join(project_dir, '.coafile.green.toml' + suffix)
+        writer = ConfigConverter(toml_file)
+        write_toml_sections(writer, all_sections)
+        printer.print("'" + toml_file + "' successfully generated.",
+                      color='green')
+    else:
+        coafile = os.path.join(project_dir, '.coafile.green' + suffix)
+        writer = ConfWriter(coafile)
+        write_sections(writer, all_sections)
+        writer.close()
+        printer.print("'" + coafile + "' successfully generated.",
+                      color='green')

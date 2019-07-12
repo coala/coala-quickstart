@@ -346,6 +346,19 @@ class TestBears(unittest.TestCase):
         os.remove('.coafile')
         os.chdir(orig_cwd)
 
+    def test_bears_allow_incomplete_sections_toml_mode(self):
+        sys.argv.append('--ci')
+        sys.argv.append('-T')
+        sys.argv.append('--allow-incomplete-sections')
+        orig_cwd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        os.chdir("bears_ci_testfiles")
+        with retrieve_stdout() as custom_stdout:
+            main()
+            self.assertNotIn("usable",
+                             custom_stdout.getvalue())
+        os.chdir(orig_cwd)
+
     def test_bears_ci_mode(self):
         sys.argv.append('--ci')
         orig_cwd = os.getcwd()
@@ -356,6 +369,20 @@ class TestBears(unittest.TestCase):
             self.assertIn("usable",
                           custom_stdout.getvalue())
         os.remove('.coafile')
+        os.chdir(orig_cwd)
+
+    def test_bears_ci_toml_mode(self):
+        sys.argv.append('--ci')
+        sys.argv.append('-T')
+        orig_cwd = os.getcwd()
+        os.chdir(os.path.dirname(os.path.realpath(__file__)))
+        os.chdir("bears_ci_testfiles")
+        with retrieve_stdout() as custom_stdout:
+            main()
+            self.assertIn("usable",
+                          custom_stdout.getvalue())
+        os.remove('.coafile.toml')
+        os.remove('.coafile.new.toml')
         os.chdir(orig_cwd)
 
     def test_bears_no_filter_by_capability_mode(self):

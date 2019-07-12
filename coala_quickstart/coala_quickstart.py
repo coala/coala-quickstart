@@ -26,7 +26,7 @@ from coala_quickstart.generation.Bears import (
     remove_unusable_bears,
 )
 from coala_quickstart.generation.Settings import (
-    generate_settings, write_coafile)
+    generate_settings, write_coafile, write_toml_file)
 from coala_quickstart.generation.SettingsClass import (
     collect_bear_settings)
 from coala_quickstart.green_mode.green_mode_core import green_mode
@@ -51,6 +51,11 @@ coala-quickstart automatically creates a .coafile for use by coala.
     arg_parser.add_argument(
         '-C', '--non-interactive', const=True, action='store_const',
         help='run coala-quickstart in non interactive mode')
+
+    arg_parser.add_argument('-T', '--toml-config', const=True,
+                            action='store_const',
+                            help='generate TOML config file '
+                                 'from coala-quickstart')
 
     arg_parser.add_argument(
         '--ci', action='store_const', dest='non_interactive', const=True,
@@ -86,7 +91,7 @@ coala-quickstart automatically creates a .coafile for use by coala.
 
 
 def main():
-    global MAX_ARGS_GREEN_MODE, MAX_VALUES_GREEN_MODE
+    global MAX_ARGS_GREEN_MODE, MAX_VALUES_GREEN_MODE, IN_TOML
     arg_parser = _get_arg_parser()
     args = arg_parser.parse_args()
 
@@ -104,6 +109,10 @@ def main():
             MAX_ARGS_GREEN_MODE = args.max_args
         if args.max_values:
             MAX_VALUES_GREEN_MODE = args.max_values
+        if args.toml_config:
+            IN_TOML = True
+        else:
+            IN_TOML = False
 
     if not args.green_mode and (args.max_args or args.max_values):
         logging.warning(' --max-args and --max-values can be used '
@@ -143,6 +152,7 @@ def main():
             project_dir, ignore_globs, relevant_bears, bear_settings_obj,
             MAX_ARGS_GREEN_MODE,
             MAX_VALUES_GREEN_MODE,
+            IN_TOML,
             project_files,
             printer,
         )
@@ -163,4 +173,7 @@ def main():
         extracted_information,
         args.incomplete_sections)
 
-    write_coafile(printer, project_dir, settings)
+    if args.toml_config:
+        write_toml_file(printer, project_dir, settings)
+    else:
+        write_coafile(printer, project_dir, settings)

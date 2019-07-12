@@ -117,7 +117,7 @@ test_script:
       python setup.py install
 
   - python -m pip install
-      git+https://github.com/coala/coala#egg=coala
+      git+https://github.com/PrajwalM2212/coala.git@writer#egg=coala
       git+https://github.com/coala/coala-bears#egg=coala-bears
 
 
