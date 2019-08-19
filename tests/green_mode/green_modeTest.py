@@ -9,10 +9,10 @@ from unittest.mock import patch
 
 from coala_quickstart.generation.SettingsClass import (
     collect_bear_settings,
-    )
+)
 from coala_quickstart.green_mode.Setting import (
     find_max_min_of_setting,
-    )
+)
 from coala_quickstart.green_mode import green_mode
 from coala_quickstart.green_mode.green_mode import (
     bear_test_fun,
@@ -26,23 +26,23 @@ from coala_quickstart.green_mode.green_mode import (
     initialize_project_data,
     local_bear_test,
     run_quickstartbear,
-    )
+)
 from coala_quickstart.generation.Utilities import (
     append_to_contents,
     dump_yaml_to_file,
     get_yaml_contents,
-    )
+)
 from coala_quickstart.green_mode.QuickstartBear import (
     QuickstartBear)
 from coalib.results.Result import Result
 from coalib.results.SourceRange import (
     SourcePosition,
     SourceRange,
-    )
+)
 from coala_utils.string_processing.Core import escape
 from tests.test_bears.AllKindsOfSettingsDependentBear import (
     AllKindsOfSettingsBaseBear,
-    )
+)
 from tests.test_bears.AnotherTestLocalDepBear import AnotherTestLocalDepBear
 from tests.test_bears.TestGlobalBear import TestGlobalBear
 from tests.test_bears.TestLocalBear import TestLocalBear
@@ -433,20 +433,33 @@ class Test_green_mode(unittest.TestCase):
         self.assertEqual(data_struct, test_data_struct)
         project_files = ['a.py', 'b.py', 'c.py', 'd.py']
         coafile = '.coafile.green'
+        toml_file = '.coafile.green.toml'
         full_path = str(Path(__file__).parent.parent.parent)
         full_path_coafile = str(Path(__file__).parent.parent.parent / coafile)
+        full_path_toml = str(Path(__file__).parent.parent.parent / toml_file)
+
         with patch('os.walk') as mockwalk:
             mockwalk.return_val = mockwalk.return_value = [
                 ('', (), ('a.py', 'b.py', 'c.py', 'd.py')), ]
             generate_green_mode_sections(data_struct, full_path,
-                                         project_files, ['x'],
+                                         project_files, ['x'], False,
+                                         printer)
+            generate_green_mode_sections(data_struct, full_path,
+                                         project_files, ['x'], True,
                                          printer)
         contents = ""
 
         with open(full_path_coafile) as f:
             for line in f.readlines():
                 contents += line
+
+        contents_toml = ""
+        with open(full_path_toml) as f:
+            for line in f.readlines():
+                contents_toml += line
+
         full_path_glob = escape(full_path + os.sep + '**', '\\')
+
         test_contents = dedent("""
             [all]
             ignore = x
@@ -468,26 +481,71 @@ class Test_green_mode(unittest.TestCase):
             files = d.py, {full_path_glob}
             bears = TestLocalBear
             some_other_setting = x""").format(
-                full_path_glob=full_path_glob)
+            full_path_glob=full_path_glob)
+
+        test_contents_toml = dedent("""
+            [all]
+            ignore = "x"
+
+            [TestLocalBear1]
+            some_setting = 3
+            bears = "TestLocalBear"
+            ignore = ["a.py", "b.py", "c.py", "d.py"]
+            files = ["a.py", "b.py", \"{full_path_glob}\"]
+            inherits = ["all"]
+            appends.all = ["ignore"]
+
+            [TestLocalBear2]
+            some_setting = 4
+            bears = "TestLocalBear"
+            ignore = ["a.py", "b.py", "c.py", "d.py"]
+            files = ["c.py", \"{full_path_glob}\"]
+            inherits = ["all"]
+            appends.all = ["ignore"]
+
+            [TestLocalBear3]
+            some_other_setting = "x"
+            bears = "TestLocalBear"
+            ignore = ["a.py", "b.py", "c.py", "d.py"]
+            files = ["d.py", \"{full_path_glob}\"]
+            inherits = ["all"]
+            appends.all = ["ignore"]""").format(
+            full_path_glob=full_path_glob)
+
         # Since the order of settings within a seciton is volatile.
-        print('test_contents')
         for line in test_contents.split('\n'):
             if line == 'ignore = x':
                 continue  # Since the path depends on the test directory
-                self.assertIn(line, [i.strip('\\').replace('\\\\C', 'C')
-                                     for i in contents.split('\n')])
+            self.assertIn(line, [i.strip('\\').replace('\\\\C', 'C')
+                                 for i in contents.split('\n')])
+
+        for line in test_contents_toml.split('\n'):
+            if line == 'ignore = "x"':
+                continue  # Since the path depends on the test directory
+            self.assertIn(line, [i.strip('\\').replace('\\\\C', 'C')
+                                 for i in contents_toml.split('\n')])
 
         with patch('os.walk') as mockwalk:
             mockwalk.return_val = mockwalk.return_value = [
                 ('', (), ('a.py', 'b.py', 'c.py', 'd.py')), ]
             generate_green_mode_sections(data_struct, full_path,
-                                         project_files, [],
+                                         project_files, [], False,
+                                         printer)
+
+            generate_green_mode_sections(data_struct, full_path,
+                                         project_files, ['x'], True,
                                          printer)
         contents = ""
 
         with open(full_path_coafile) as f:
             for line in f.readlines():
                 contents += line
+
+        contents_toml = ""
+        with open(full_path_toml) as f:
+            for line in f.readlines():
+                contents_toml += line
+
         # TODO: remove the prefix 'all.' from section names when section
         # all is not present which only happends when the ignore field
         # is empty.
@@ -509,13 +567,49 @@ class Test_green_mode(unittest.TestCase):
             files = d.py, {full_path_glob}
             bears = TestLocalBear
             some_other_setting = x""").format(
-                full_path_glob=full_path_glob)
+            full_path_glob=full_path_glob)
+
+        test_contents_toml = dedent("""
+        [all]
+        ignore = "x"
+
+        [TestLocalBear1]
+        some_setting = 3
+        bears = "TestLocalBear"
+        ignore = ["a.py", "b.py", "c.py", "d.py"]
+        files = ["a.py", "b.py", \"{full_path_glob}\"]
+        inherits = ["all"]
+        appends.all = ["ignore"]
+
+        [TestLocalBear2]
+        some_setting = 4
+        bears = "TestLocalBear"
+        ignore = ["a.py", "b.py", "c.py", "d.py"]
+        files = ["c.py", \"{full_path_glob}\"]
+        inherits = ["all"]
+        appends.all = ["ignore"]
+
+        [TestLocalBear3]
+        some_other_setting = "x"
+        bears = "TestLocalBear"
+        ignore = ["a.py", "b.py", "c.py", "d.py"]
+        files = ["d.py", \"{full_path_glob}\"]
+        inherits = ["all"]
+        appends.all = ["ignore"]""").format(
+            full_path_glob=full_path_glob)
+
         # Since the order of settings within a seciton is volatile.
         for line in test_contents.split('\n'):
             if line == 'ignore = x':
                 continue  # Since the path depends on the test directory
             self.assertIn(line, [i.strip('\\').replace('\\\\C', 'C')
                                  for i in contents.split('\n')])
+
+        for line in test_contents_toml.split('\n'):
+            if line == 'ignore = "x"':
+                continue  # Since the path depends on the test directory
+            self.assertIn(line, [i.strip('\\').replace('\\\\C', 'C')
+                                 for i in contents_toml.split('\n')])
 
         test_data_struct = {TestLocalBear: [[{'filename': ['a.py', 'b.py'],
                                               'some_setting': 3},
@@ -530,13 +624,21 @@ class Test_green_mode(unittest.TestCase):
             mockwalk.return_val = mockwalk.return_value = [
                 ('', (), ('a.py', 'b.py', 'c.py', 'd.py')), ]
             generate_green_mode_sections(test_data_struct, full_path,
-                                         project_files, [],
+                                         project_files, [], False,
+                                         printer)
+            generate_green_mode_sections(test_data_struct, full_path,
+                                         project_files, [], True,
                                          printer)
         contents = ""
 
         with open(full_path_coafile) as f:
             for line in f.readlines():
                 contents += line
+
+        contents_toml = ""
+        with open(full_path_toml) as f:
+            for line in f.readlines():
+                contents_toml += line
 
         # TODO: section name enumerations should not skip integers.
         test_contents = dedent("""
@@ -557,7 +659,30 @@ class Test_green_mode(unittest.TestCase):
             files = d.py, {full_path_glob}
             bears = TestLocalBear
             some_other_setting = x""").format(
-                full_path_glob=full_path_glob)
+            full_path_glob=full_path_glob)
+
+        test_contents_toml = dedent("""
+        [TestLocalBear1]
+        ignore = ["a.py", "b.py", "c.py", "d.py"]
+        files = ["a.py", "b.py", \"{full_path_glob}\"]
+        bears = "TestLocalBear"
+        some_setting = 3
+        inherits = ["all"]
+
+        [TestLocalBear2]
+        ignore = ["a.py", "b.py", "c.py", "d.py"]
+        files = ["c.py", \"{full_path_glob}\"]
+        bears = "TestLocalBear"
+        some_setting = 4
+        inherits = ["all"]
+
+        [TestLocalBear4]
+        some_other_setting = "x"
+        bears = "TestLocalBear"
+        ignore = ["a.py", "b.py", "c.py", "d.py"]
+        files = ["d.py", \"{full_path_glob}\"]
+        inherits = ["all"]""").format(
+            full_path_glob=full_path_glob)
 
         # Since the order of settings within a seciton is volatile.
         for line in test_contents.split('\n'):
@@ -565,6 +690,12 @@ class Test_green_mode(unittest.TestCase):
                 continue  # Since the path depends on the test directory
             self.assertIn(line, [i.strip('\\').replace('\\\\C', 'C')
                                  for i in contents.split('\n')])
+
+        for line in test_contents_toml.split('\n'):
+            if line == 'ignore = x':
+                continue  # Since the path depends on the test directory
+            self.assertIn(line, [i.strip('\\').replace('\\\\C', 'C')
+                                 for i in contents_toml.split('\n')])
 
 
 class MultiProcessingTest(unittest.TestCase):

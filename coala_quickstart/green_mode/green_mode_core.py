@@ -19,7 +19,7 @@ PROJECT_DATA = '.project_data.yaml'
 
 
 def green_mode(project_dir: str, ignore_globs, bears, bear_settings_obj,
-               op_args_limit, value_to_op_args_limit, project_files,
+               op_args_limit, value_to_op_args_limit, in_toml, project_files,
                printer=None):
     """
     Runs the green mode of coala-quickstart.
@@ -44,6 +44,8 @@ def green_mode(project_dir: str, ignore_globs, bears, bear_settings_obj,
         about whether a setting takes a boolean value or any other value.
     :param op_args_limit:
         The maximum number of optional bear arguments allowed for guessing.
+    :param in_toml:
+        Decides whether to generate configuration file in toml or not
     :param project_files:
         The list of files in the project.
     :param value_to_op_args_limit:
@@ -95,7 +97,8 @@ def green_mode(project_dir: str, ignore_globs, bears, bear_settings_obj,
             settings_unified[bear] = settings_non_op[bear]
 
     generate_green_mode_sections(
-        settings_unified, project_dir, project_files, ignore_globs, printer)
+        settings_unified, project_dir, project_files, ignore_globs,
+        in_toml, printer)
 
     # Final Dump.
     dump_yaml_to_file(project_data, project_data_contents)

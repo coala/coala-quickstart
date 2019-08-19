@@ -1,4 +1,5 @@
-git+https://github.com/coala/coala#egg=coala
+git+https://gitlab.com/coala/coala-utils#egg=coala-utils
 git+https://github.com/coala/coala-bears#egg=coala-bears
+git+https://github.com/PrajwalM2212/coala.git@writer#egg=coala
 gemfileparser~=0.6.2
 pyjsparser~=2.4.5
