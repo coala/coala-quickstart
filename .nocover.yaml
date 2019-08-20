@@ -32,9 +32,6 @@ nocover_regexes:
   - def autofill_value
   - def is_autofill_possible
   - def require_setting
-  # generation/Settings.py::get_extensions
-  # https://github.com/coala/coala-quickstart/issues/279
-  - if ext in exts
   # generation/SettingsClass.py::fillup_optional_settings
   # https://github.com/coala/coala-quickstart/issues/280
   - if inside_annot
