@@ -22,9 +22,7 @@ from coala_quickstart.green_mode.green_mode import (
     generate_green_mode_sections,
     get_kwargs,
     get_setting_type,
-    global_bear_test,
     initialize_project_data,
-    local_bear_test,
     run_quickstartbear,
     )
 from coala_quickstart.generation.Utilities import (
