@@ -40,9 +40,7 @@ from coalib.results.SourceRange import (
     SourceRange,
     )
 from coala_utils.string_processing.Core import escape
-from tests.test_bears.AllKindsOfSettingsDependentBear import (
-    AllKindsOfSettingsBaseBear,
-    )
+
 from tests.test_bears.AnotherTestLocalDepBear import AnotherTestLocalDepBear
 from tests.test_bears.TestGlobalBear import TestGlobalBear
 from tests.test_bears.TestLocalBear import TestLocalBear
