@@ -42,3 +42,6 @@ shortlog_regex = ([^:]*|[^:]+[^ ]: [A-Z0-9*].*)
 [all.yml]
 bears = YAMLLintBear
 files = *.yml, .ci/*.yml, tests/**/*.yml
+
+[all.nofutureimports]
+bears = NoFutureImportBear

@@ -2,3 +2,4 @@ git+https://github.com/coala/coala#egg=coala
 git+https://github.com/coala/coala-bears#egg=coala-bears
 gemfileparser~=0.6.2
 pyjsparser~=2.4.5
+git+https://gitlab.com/MacBox7/coala-pyflakes.git#egg=coala-pyflakes
