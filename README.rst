@@ -58,7 +58,7 @@ To install the latest development version run:
 Use the ``-e`` tag to install ``coala-quickstart`` in the editable mode which
 will allow you to make changes to the local repository and have them
 take effect in ``coala-quickstart`` immediately. For that, use the last
-commmand as:
+command as:
 
 .. code-block:: bash
 
