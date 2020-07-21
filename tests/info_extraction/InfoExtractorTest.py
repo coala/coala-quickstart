@@ -223,7 +223,7 @@ class InfoExtractorTest(unittest.TestCase):
 
             with self.assertRaisesRegexp(
                     ValueError,
-                    ("The taraget file tmpfile_not_allowed does not match the "
+                    ("The target file tmpfile_not_allowed does not match the "
                      "supported file globs \('tempfile\*\*', '\*\*tempfile'\) "
                      "of TempfileExtractor")):
                 uut = self.TempfileExtractor(

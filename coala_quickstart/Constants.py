@@ -39,7 +39,7 @@ ALL_CAPABILITIES = {
     'Variable Misuse'
 }
 
-DEFAULT_CAPABILTIES = {
+DEFAULT_CAPABILITIES = {
     'Syntax',
     'Formatting',
     'Documentation',

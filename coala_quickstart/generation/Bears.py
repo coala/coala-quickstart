@@ -5,7 +5,7 @@ from collections import defaultdict
 
 
 from coala_quickstart.Constants import (
-    IMPORTANT_BEAR_LIST, ALL_CAPABILITIES, DEFAULT_CAPABILTIES)
+    IMPORTANT_BEAR_LIST, ALL_CAPABILITIES, DEFAULT_CAPABILITIES)
 from coala_quickstart.Strings import BEAR_HELP
 from coala_quickstart.generation.SettingsFilling import is_autofill_possible
 from coala_quickstart.generation.Utilities import concatenate
@@ -98,16 +98,16 @@ def filter_relevant_bears(used_languages,
         # Ask user for capablities
         user_selected_capabilities = set()
         if not args.non_interactive:
-            user_selected_capabilities = ask_to_select_capabilties(
-                list(ALL_CAPABILITIES), list(DEFAULT_CAPABILTIES), printer)
+            user_selected_capabilities = ask_to_select_capabilities(
+                list(ALL_CAPABILITIES), list(DEFAULT_CAPABILITIES), printer)
 
         desired_capabilities = (
             user_selected_capabilities if user_selected_capabilities
-            else DEFAULT_CAPABILTIES)
+            else DEFAULT_CAPABILITIES)
 
-        # Filter bears based on capabilties
+        # Filter bears based on capabilities
         for lang, lang_bears in candidate_bears.items():
-            # Eliminate bears which doesn't contain the desired capabilites
+            # Eliminate bears which doesn't contain the desired capabilities
             capable_bears = get_bears_with_given_capabilities(
                 lang_bears, desired_capabilities)
             candidate_bears[lang] = capable_bears
@@ -156,7 +156,7 @@ def filter_relevant_bears(used_languages,
 
     if not args.no_filter_by_capabilities:
         # capabilities satisfied till now
-        satisfied_capabilities = get_bears_capabilties(selected_bears)
+        satisfied_capabilities = get_bears_capabilities(selected_bears)
         remaining_capabilities = {
             lang: [cap for cap in desired_capabilities
                    if lang in satisfied_capabilities and
@@ -168,8 +168,8 @@ def filter_relevant_bears(used_languages,
             filtered_bears[lang] = get_bears_with_given_capabilities(
                 lang_bears, remaining_capabilities[lang])
 
-        # Remove overlapping capabilty bears
-        filtered_bears = remove_bears_with_conflicting_capabilties(
+        # Remove overlapping capability bears
+        filtered_bears = remove_bears_with_conflicting_capabilities(
             filtered_bears)
 
         # Add to the selected_bears
@@ -378,9 +378,9 @@ def get_bears_with_given_capabilities(bears, capabilities):
     return result
 
 
-def get_bears_capabilties(bears_by_lang):
+def get_bears_capabilities(bears_by_lang):
     """
-    Return a dict of capabilties of all the bears by language
+    Return a dict of capabilities of all the bears by language
     in the `bears_by_lang` dictionary.
 
     :param bears_by_lang: dict with language names as keys
@@ -396,7 +396,7 @@ def get_bears_capabilties(bears_by_lang):
     return result
 
 
-def generate_capabilties_map(bears_by_lang):
+def generate_capabilities_map(bears_by_lang):
     """
     Generates a dictionary of capabilities, languages and the
     corresponding bears from the given ``bears_by_lang`` dict.
@@ -431,7 +431,7 @@ def generate_capabilties_map(bears_by_lang):
     return capabilities_meta
 
 
-def remove_bears_with_conflicting_capabilties(bears_by_lang):
+def remove_bears_with_conflicting_capabilities(bears_by_lang):
     """
     Eliminate bears having no unique capabilities among the other
     bears present in the list.
@@ -445,7 +445,7 @@ def remove_bears_with_conflicting_capabilties(bears_by_lang):
     result = {}
     for lang, bears in bears_by_lang.items():
         lang_result = set()
-        capabilities_map = generate_capabilties_map({lang: bears})
+        capabilities_map = generate_capabilities_map({lang: bears})
         for cap in capabilities_map.keys():
             # bears that can fix the ``cap`` capabilitiy
             fix_bears = capabilities_map[cap][lang].get('FIX')
@@ -510,11 +510,11 @@ def prompt_to_activate(bear, printer):
         return prompt_to_activate(bear, printer)
 
 
-def ask_to_select_capabilties(all_capabilities,
+def ask_to_select_capabilities(all_capabilities,
                               default_capabilities,
                               console_printer):
     """
-    Asks the users to select capabilties out of all_capabilities.
+    Asks the users to select capabilities out of all_capabilities.
     """
     all_capabilities = sorted(all_capabilities)
     PROMPT_QUESTION = ('What would you like the bears to detect or fix? '
@@ -544,19 +544,19 @@ def ask_to_select_capabilties(all_capabilities,
         # Parsing failed, choose all the default capabilities
         selected_numbers = [total_options]
 
-    selected_capabilties = []
+    selected_capabilities = []
 
     for num in selected_numbers:
         if num >= 0 and num < total_options:
-            selected_capabilties.append(all_capabilities[int(num) - 1])
+            selected_capabilities.append(all_capabilities[int(num) - 1])
         elif num == total_options:
-            selected_capabilties += default_capabilities
+            selected_capabilities += default_capabilities
         else:
             console_printer.print(
                 '{} is not a valid option. Please choose the right'
                 ' option numbers'.format(str(num)))
-            ask_to_select_capabilties(all_capabilities,
+            ask_to_select_capabilities(all_capabilities,
                                       default_capabilities,
                                       console_printer)
 
-    return set(selected_capabilties)
+    return set(selected_capabilities)
