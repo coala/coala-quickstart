@@ -64,7 +64,7 @@ coala-quickstart automatically creates a .coafile for use by coala.
     arg_parser.add_argument(
         '--no-filter-by-capabilities', action='store_const',
         dest='no_filter_by_capabilities', const=True,
-        help='disable filtering of bears by their capabilties.')
+        help='disable filtering of bears by their capabilities.')
 
     arg_parser.add_argument(
         '-g', '--green-mode', const=True, action='store_const',

@@ -26,7 +26,7 @@ class InfoExtractor:
         target_files = self.retrieve_files(target_globs, project_directory)
         for fname in target_files:
             if not fnmatch(fname, self.supported_file_globs):
-                raise ValueError('The taraget file {} does not match the '
+                raise ValueError('The target file {} does not match the '
                                  'supported file globs {} of {}'.format(
                                     fname,
                                     self.supported_file_globs,
@@ -99,7 +99,7 @@ class InfoExtractor:
     @staticmethod
     def retrieve_files(file_globs, directory):
         """
-        Returns matched filenames acoording to the list of file globs and
+        Returns matched filenames according to the list of file globs and
         supported files of the extractor.
         """
         matches = []
