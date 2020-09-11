@@ -52,8 +52,6 @@ _DISABLE_MP = os.name == 'nt' or _PYTHON_VERSION_MINOR == (3, 5)
 if _CI_PYTEST_ACTIVE:  # pragma: no cover
     if _DISABLE_MP:
         _RESERVE_CPUS = sys.maxsize
-    elif _PYTHON_VERSION_MINOR == (3, 4):
-        _RESERVE_CPUS = 2
 
 
 def initialize_project_data(dir, ignore_globs):

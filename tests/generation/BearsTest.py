@@ -34,13 +34,17 @@ package_json = """
 {
   "name": "awesome-packages",
   "dependencies": {
-    "babel-eslint": "~8",
+    "babel-eslint": "~8.0",
     "eslint": "~3",
+    "eslint-plugin-html": "~3.2.2",
     "eslint-plugin-import": "~2",
+    "eslint-plugin-markdown": "~1.0.0-beta.6",
+    "eslint-plugin-typescript": "~0.8.1",
     "bootlint": "~0",
     "csslint": "~1",
     "happiness": "~10",
     "jshint": "~2",
+    "typescript-eslint-parser": "~12.0.0",
     "some_linter": "~2"
     }
 }

@@ -1,4 +1,4 @@
-overrides: coala.yaml
+overrides: coala-ci-requirements.yaml
 
 allow_generic_no_cover: true
 

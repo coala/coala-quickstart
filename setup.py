@@ -5,6 +5,7 @@ import os
 import platform
 import sys
 
+import pip
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
@@ -362,6 +363,10 @@ SETUP_COMMANDS.update({
 })
 
 if __name__ == '__main__':
+    pip_version = LooseVersion(pip.__version__)
+    if pip_version < LooseVersion('9.0.1'):
+        raise RuntimeError('Version of pip is less than 9.0.1. '
+                           'Consider upgrading pip to pip~=9.0.1')
     setup(name='coala-quickstart',
           version=VERSION,
           description=DESCRIPTION,

@@ -28,19 +28,33 @@ entry_points:
     - coala-quickstart = coala_quickstart.coala_quickstart:main
 
 dependencies:
-  - coala_bears~=0.12.0.dev20170722110839
-  - coala_utils~=0.6.6
+  - 'git+https://github.com/coala/coala#egg=coala'
+  - 'git+https://github.com/coala/coala-bears#egg=coala-bears'
   - gemfileparser~=0.6.2
   - pyjsparser~=2.4.5
 
+requires:
+  - type: git
+    url: https://gitlab.com/jayvdb/mobans
+    branch: custom-travis-template
 
 configuration:
   template_dir:
-    - ../coala-mobans/templates/
-    - ../coala-mobans/assets/
+    - mobans:templates/
+    - mobans:assets/
   configuration: .moban.yaml
-  configuration_dir: ../coala-mobans/
+  configuration_dir: 'mobans:'
 targets:
+  - Fudgefile: Fudgefile.jj2
+  - .ci/constants.ps1: constants.ps1.jj2
+  - .ci/deps.python-packages.ps1: fudge/deps.python-packages.ps1
+  - .ci/Fudge.ps1: fudge/Fudge.ps1
+  - .ci/Modules/FudgeTools.psm1: fudge/Modules/FudgeTools.psm1
+  - .ci/FudgeCI.ps1: fudge/FudgeCI.ps1
+  - .ci/FudgeGenerateFake.ps1: fudge/FudgeGenerateFake.ps1
+  - .ci/PrepareAVVM.ps1: fudge/PrepareAVVM.ps1
+  - .ci/FudgePostInstall.ps1: fudge/FudgePostInstall.ps1
+  - .ci/store_env_in_registry.py: ci/store_env_in_registry.py
   - .gitignore: coala-gitignore.jj2
   - .editorconfig: .editorconfig.jj2
   - setup.py: coala-setup.py.jj2
@@ -49,6 +63,6 @@ targets:
   - test-requirements.txt: test-requirements.txt.jj2
   - coala_quickstart/VERSION: VERSION.jj2
   - coala_quickstart/__init__.py: __init__.py.jj2
+  - .travis.yml: ci/coala-travis.yml.jj2
   - .ci/appveyor.yml: ci/appveyor.yml.jj2
   - .ci/run_with_env.cmd: run_with_env.cmd
-  - .ci/check_moban.sh: ci/check_moban.sh

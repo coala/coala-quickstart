@@ -1,4 +1,4 @@
-coala_bears~=0.12.0.dev20170722110839
-coala_utils~=0.6.6
+git+https://github.com/coala/coala#egg=coala
+git+https://github.com/coala/coala-bears#egg=coala-bears
 gemfileparser~=0.6.2
 pyjsparser~=2.4.5
