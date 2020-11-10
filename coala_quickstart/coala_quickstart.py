@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import signal
 import sys
 
 from pyprint.ConsolePrinter import ConsolePrinter
@@ -85,6 +86,10 @@ coala-quickstart automatically creates a .coafile for use by coala.
     return arg_parser
 
 
+def signal_handler(signal, frame):
+    sys.exit(0)
+
+
 def main():
     global MAX_ARGS_GREEN_MODE, MAX_VALUES_GREEN_MODE
     arg_parser = _get_arg_parser()
@@ -93,6 +98,7 @@ def main():
     logging.basicConfig(stream=sys.stdout)
     printer = ConsolePrinter()
     logging.getLogger(__name__)
+    signal.signal(signal.SIGINT, signal_handler)
 
     fpc = None
     project_dir = os.getcwd()
