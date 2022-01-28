@@ -58,7 +58,7 @@ To install the latest development version run:
 Use the ``-e`` tag to install ``coala-quickstart`` in the editable mode which
 will allow you to make changes to the local repository and have them
 take effect in ``coala-quickstart`` immediately. For that, use the last
-commmand as:
+command as:
 
 .. code-block:: bash
 
@@ -80,7 +80,7 @@ started, simply run:
     $ coala-quickstart
 
 This should prompt you for the project directory. If you want to use the current
-directory, just press the return key and we'll be on our way!
+directory, just press the return key and you'll be on your way!
 
 At the end, you should have a file named ``.coafile`` generated at the root of your
 project directory. This contains all the settings needed by coala to lint and
